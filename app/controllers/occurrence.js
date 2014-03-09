@@ -7,16 +7,18 @@ var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouch
 
 // Index: http://localhost/views/occurrence/index.html
 occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
-  steroids.view.setAllowedRotations([0,180,-90,90]);  // Will rotate to every direction
+  // Will rotate to every direction
+  steroids.view.setAllowedRotations([0,180,-90,90]);  
   // Populated by $scope.loadOccurrences
   $scope.occurrences = [];
-  /* individual occ */ 
-  $scope.occ = [];
+  // individual occ
+  $scope.occ = []; 
   $scope.currentMarker = null;
-  /* instances state array */
+  $scope.currentPolyline = null;
+  // instances state array
   $scope.instances = {
     '11' : {'name' : 'Rodeiras - Tipo 1'},
-    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false, 'points': {}, 'watch_id': null},
+    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false, 'points': [], 'watch_id': null},
     '13' : {'name' : 'Rodeiras - Tipo 3'},
     '21' : {'name' : 'Fendilhamento - Tipo 1'},
     '22' : {'name' : 'Fendilhamento - Tipo 2'},
@@ -32,51 +34,77 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     '53' : {'name' : 'Reparações - Tipo 3'}
   };
 
+  // instantiates the map
   var map = L.map('map-container').setView([40.20641, -8.409745], 13);
-  var markersLayer = L.layerGroup();
 
+  // add the tile
   L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Yeah right OSM.',
       maxZoom: 18
   }).addTo(map);
 
-
-
-
-
-  /* START AND STOP EVENT HANDLERS */ 
+  // START AND STOP EVENT HANDLERS
 
   $scope.startRoad = function($event) {
-    var start, interval, stop;
     var id = $event.target.innerHTML;
 
-    /* if it's watching something stops */
+    // if it's watching something stops
     if($scope.instances[id].watching) {
-      $scope.instances[id].watching = false;
-      navigator.geolocation.clearWatch($scope.instances[id].watch_id);
-      $scope.instances[id].watch_id = null;
-      /* draw the line */
-      var path = [];
-      var pathObject = $scope.instances[id].points;
-      for(var p in pathObject) {
-        path.push = [pathObject[p].coords.latitude, pathObject[p].coords.longitude];
+
+      // clear if there's something
+      if($scope.currentMarker) {
+        map.removeLayer($scope.currentMarker);
       }
 
-      var polyline = L.polyline(path, {color: 'red'}).addTo(map);
+      // updates the flag
+      $scope.instances[id].watching = false;
 
-      /* clear points */ 
-      $scope.instances[id].points = {};
-      /* stop watching */ 
+      // stop watching
+      navigator.geolocation.clearWatch($scope.instances[id].watch_id);
+      $scope.instances[id].watch_id = null;
+      
+      // draw the line 
+      var path = [];
+      var pathObject = $scope.instances[id].points;
+
+      // get the points from current state of the instance 
+      // creates the array and draws the polyline
+      for(var p in pathObject) {
+        path.push([pathObject[p].coords.latitude, pathObject[p].coords.longitude]);
+      }
+
+      $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
+      // zoom the map to the polyline
+      map.fitBounds($scope.currentPolyline.getBounds());
+      // clear points  
+      $scope.instances[id].points = [];
+      // stop watching 
       $scope.watchStatus = "not watching";
 
     } else {
+      // remove if we have something
+      if($scope.currentMarker) {
+        map.removeLayer($scope.currentMarker);
+      }
+
+      // just a flag to check wether we'r watching or not
       $scope.instances[id].watching = true;
-      /* starts the watcher */ 
+
+      // starts the watcher 
       var options = { timeout: 30000, enableHighAccuracy: true };
       $scope.instances[id].watch_id = navigator.geolocation.watchPosition(
         function(position) {
+          // remove the last one
+          if($scope.currentMarker) {
+            map.removeLayer($scope.currentMarker);
+          }
+
+          $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+
+          // for every location update add the point to the 
+          // updated state of the instance object
+
           $scope.instances[id].points.push(position);
-          console.log("position: " + position);
         }, 
         function(error) {
           alert(error);
@@ -86,23 +114,33 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
-
   /* SINGLE POINT INSTANCE */ 
 
-  $scope.start = function($event) {
+  $scope.save = function($event) {
 
-    navigator.geolocation.getCurrentPosition(function(position) {
-        var occurrence = {
-          id : $event.target.innerHTML,
-          location : position,
-          createddate : new Date()
-        }
-        
+    navigator.geolocation.getCurrentPosition(function(position) {  
+        // clear markers if they exist
         if($scope.currentMarker) {
           map.removeLayer($scope.currentMarker);
         }
 
+        // clear polyline if they exist
+        if($scope.currentPolyline) {
+          map.removeLayer($scope.currentPolyline);
+          $scope.currentPolyline = null;
+        }
+
+        var occurrence = {
+          id : $event.target.innerHTML,
+          location : position,
+          createddate : new Date(),
+          type: 'single'
+        }
+
         $scope.occ.push(occurrence);
+
+        $scope.$apply();
+
         /* create layer to easily remove marker */
         $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
       }, 
@@ -111,8 +149,40 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       });
   };
 
+  $scope.openOccurrence = function(id) {
+
+    // clear markers if they exist
+    if($scope.currentMarker) {
+      map.removeLayer($scope.currentMarker);
+    }
+
+    // clear polyline if they exist
+    if($scope.currentPolyline) {
+      map.removeLayer($scope.currentPolyline);
+      $scope.currentPolyline = null;
+    }
+
+    // find it 
+    for(var o in occ) {
+      if(parseInt(occ[o].id) == parseInt(id)) {
+        
+        // check the type
+        if(occ[o].type == 'single') {
+
+          $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+
+        } else {
+
+
+
+
+        }
+      }
+    }
+  };
+
   /* SAVE CURRENT STATE */ 
-  $scope.save = function(id) {
+  $scope.saveToPersistent = function(id) {
 
   };
 
@@ -121,8 +191,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     webView = new steroids.views.WebView("/views/occurrence/show.html?id="+id);
     steroids.layers.push(webView);
   };
-
-
 
   /* START AND STOP EVENT HANDLERS */ 
 
