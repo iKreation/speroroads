@@ -73,13 +73,28 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         path.push([pathObject[p].coords.latitude, pathObject[p].coords.longitude]);
       }
 
+      // save the occurrence
+      var occurrence = {
+        id : $event.target.innerHTML,
+        position : null,
+        path : path,
+        createddate : new Date(),
+        type: 'path'
+      }
+
+      $scope.occ.push(occurrence);
+
+      /* refresh */ 
+      $scope.$apply();
+
+
       $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
       // zoom the map to the polyline
       map.fitBounds($scope.currentPolyline.getBounds());
       // clear points  
       $scope.instances[id].points = [];
       // stop watching 
-      $scope.watchStatus = "not watching";
+      steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[id].name);
 
     } else {
       // remove if we have something
@@ -110,7 +125,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           alert(error);
         }, 
         options);
-      $scope.watchStatus = "watching";
+      steroids.view.navigationBar.show("Speroroads :: Localizando...");
+
     }
   };
 
@@ -133,17 +149,19 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         var occurrence = {
           id : $event.target.innerHTML,
           position : position,
+          path : null,
           createddate : new Date(),
           type: 'single'
         }
+
+        /* create layer to easily remove marker */
+        $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
 
         $scope.occ.push(occurrence);
 
         /* refresh */ 
         $scope.$apply();
-
-        /* create layer to easily remove marker */
-        $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+        steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.innerHTML].name);
       }, 
       function(error) {
         alert(error);
@@ -154,6 +172,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     // clear markers if they exist
     if($scope.currentMarker) {
       map.removeLayer($scope.currentMarker);
+      $scope.currentMarker = null;
     }
 
     // clear polyline if they exist
@@ -172,10 +191,16 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           map.fitBounds([[pos.coords.latitude, pos.coords.longitude]]);
         } else {
 
-
-
+          var path = $scope.occ[o].path;
+          
+          $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
+          // zoom the map to the polyline
+          map.fitBounds($scope.currentPolyline.getBounds());
 
         }
+
+        steroids.view.navigationBar.show("Speroroads :: Vendo " + $scope.instances[$scope.occ[o].id].name);
+
       }
     }
   };
@@ -220,7 +245,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // -- Native navigation
 
   // Set up the navigation bar
-  steroids.view.navigationBar.show("Occurrence index");
+  steroids.view.navigationBar.show("Prototype");
 
   // Define a button for adding a new occurrence
   var addButton = new steroids.buttons.NavigationBarButton();
