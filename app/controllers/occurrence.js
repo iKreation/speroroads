@@ -1,6 +1,7 @@
 // Since we are using the Cordova SQLite plugin, initialize AngularJS only after deviceready
 document.addEventListener("deviceready", function() {
   angular.bootstrap(document, ['occurrenceApp']);
+
 });
 
 var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouchevents']);
@@ -8,15 +9,70 @@ var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouch
 // Index: http://localhost/views/occurrence/index.html
 occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   steroids.view.setAllowedRotations([0,180,-90,90]);  // Will rotate to every direction
-
   // Populated by $scope.loadOccurrences
   $scope.occurrences = [];
+  /* individual occ */ 
+  $scope.occ = [];
+  $scope.instances = {
+    '11' : {'name' : 'Rodeiras - Tipo 1'},
+    '12' : {'name' : 'Rodeiras - Tipo 2'},
+    '13' : {'name' : 'Rodeiras - Tipo 3'},
+    '21' : {'name' : 'Fendilhamento - Tipo 1'},
+    '22' : {'name' : 'Fendilhamento - Tipo 2'},
+    '23' : {'name' : 'Fendilhamento - Tipo 3'},
+    '31' : {'name' : 'Peladas etc - Tipo 1'},
+    '32' : {'name' : 'Peladas etc - Tipo 2'},
+    '33' : {'name' : 'Peladas etc - Tipo 3'},
+    '41' : {'name' : 'Covas - Tipo 1'},
+    '42' : {'name' : 'Covas - Tipo 2'},
+    '43' : {'name' : 'Covas - Tipo 3'},
+    '51' : {'name' : 'Reparações - Tipo 1'},
+    '52' : {'name' : 'Reparações - Tipo 2'},
+    '53' : {'name' : 'Reparações - Tipo 3'}
+  };
+
+  var map = L.map('map-container').setView([40.20641, -8.409745], 13);
+  
+  L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Yeah right OSM.',
+      maxZoom: 18
+  }).addTo(map);
+
+
+  /* START AND STOP EVENT HANDLERS */ 
+
+  $scope.start = function($event) {
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+        var occurrence = {
+          id : $event.target.innerHTML,
+          location : position,
+          createddate : new Date()
+        }
+
+        var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+
+        $scope.occ.push(occurrence);
+      }, 
+      function(error) {
+        alert(error);
+      });
+
+  };
+
+  $scope.stop = function(id) {
+
+  };
 
   // Helper function for opening new webviews
   $scope.open = function(id) {
     webView = new steroids.views.WebView("/views/occurrence/show.html?id="+id);
     steroids.layers.push(webView);
   };
+
+
+
+  /* START AND STOP EVENT HANDLERS */ 
 
   $scope.loadOccurrences = function() {
     $scope.loading = true;
@@ -61,7 +117,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   steroids.view.navigationBar.setButtons({
     right: [addButton]
   });
-
 
 });
 
@@ -111,14 +166,20 @@ occurrenceApp.controller('ShowCtrl', function ($scope, Occurrence) {
   steroids.view.navigationBar.setButtons({
     right: [editButton]
   });
-
-
 });
 
 
 // New: http://localhost/views/occurrence/new.html
 
 occurrenceApp.controller('NewCtrl', function ($scope, Occurrence) {
+
+  $scope.startOccurrence = function($event) {
+    $event.classList.remove("topcoat-button");
+    $event.classList.add("topcoat-button--cta");
+    console.log($event.target.innerHTML);
+    console.log($event.target.innerHTML);
+
+  };
 
   $scope.close = function() {
     steroids.modal.hide();

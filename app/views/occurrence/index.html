@@ -1,14 +1,71 @@
-<div ng-controller="IndexCtrl">
-  <div class="spinner" ng-show="loading"></div>
-  <div class="topcoat-list__container">
+<style>
+  .speroroads-bottom { margin-bottom:5px;padding:25px;} 
+  .list-evaluation { border-right:1px solid #333; padding-right:0px; min-height:100%;}
+  .no-padding {padding:0px;}
+  #map-container {min-height:400px; margin-bottom:10px;}
+  #commander {margin-right:0px;}
+</style>
 
-    <ul class="topcoat-list">
-      <!-- order is reversed created timestamp -->
-      <li class="topcoat-list__item" hm-tap="open(occurrence.id)" ng-repeat="occurrence in occurrences | orderBy: '-createddate'">
-        {{ occurrence.name }}
-      </li>
-    </ul>
+<div ng-controller="IndexCtrl" class="container-fluid no-padding">
+  <div class="row">
+    
+    <div class="col-md-3 list-evaluation">
+      <div class="topcoat-list__container">
+          <ul class="topcoat-list">
+          <!-- order is reversed created timestamp -->
+          <li class="topcoat-list__item" ng-repeat="occurrence in occurrences | orderBy: '-createddate'">
+            {{ occurrence.name }}
+            <button hm-tap="open(occurrence.id)" style="float:right">Detalhes</button>
+          </li>
+        </ul>
+      </div>
+    </div>
 
-  </div>
+    <div class="col-md-9">
+      <div class="container-fluid no-padding">
+        <div class="row">
+          <div class="col-md-12" id="map-container">
+            
+          </div>
+        </div>
 
-</div>
+        <div class="row">
+          <div class="col-md-5 no-padding" id="logger">
+            <div class="topcoat-list__container" style="width:98%;max-height:280px;">
+                <ul class="topcoat-list">
+                <!-- order is reversed created timestamp -->
+                <li class="topcoat-list__item" ng-repeat="o in occ | orderBy: '-createddate'">
+                  {{ instances[o.id].name }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="col-md-7 no-padding" id="commander">
+            <div class="spinner" ng-show="loading"></div>
+              <form class="simple-form">
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">11</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">12</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">13</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">21</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">22</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">23</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">31</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)" hm-tap="start($event)">32</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">33</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">41</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">42</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">43</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">51</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">52</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">53</button>
+                <button class="topcoat-button--large--cta speroroads-bottom">Guardar</button>
+                <button class="topcoat-button--large speroroads-bottom">Terminar</button>
+                <br>
+              </form>
+          </div> <!-- col 12 -->
+        </div> <!-- commander div -->
+      </div>  
+    </div>
+  </div> <!-- general row -->
+</div> <!-- first container -->

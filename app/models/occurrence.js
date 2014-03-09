@@ -25,8 +25,8 @@ module.factory('Occurrence', function() {
 
   // Define a new table
   Occurrence = persistence.define('Occurrence', {
-    name: "TEXT",
-    description: "TEXT"
+    id: "TEXT",
+    name: "TEXT"
   });
 
   persistence.schemaSync(function() {
@@ -38,3 +38,5 @@ module.factory('Occurrence', function() {
 
 
 })();
+
+

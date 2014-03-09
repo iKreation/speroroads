@@ -1,27 +1,30 @@
+<style>
+  .speroroads-bottom { margin-bottom:5px; } 
+</style>
+
 <div ng-controller="NewCtrl">
   <div class="spinner" ng-show="loading"></div>
   <div class="content-padded">
-    <h1>Nova ocorrência</h1>
 
     <form class="simple-form">
-      <label>Tipo:</label><br>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">R1</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">R2</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">R3</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">F1</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">F2</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">F3</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">P1</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">P2</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">P3</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">C1</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">C2</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">C3</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">R1</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">R2</a>
-      <a class="topcoat-button--cta center" style="margin-bottom:5px;">R3</a>
-      
-      <br><br>
+      <a class="topcoat-button center speroroads-bottom" hm-tap="startOccurrence($event)">R1</a>
+      <a class="topcoat-button center speroroads-bottom">R2</a>
+      <a class="topcoat-button center speroroads-bottom">R3</a>
+      <a class="topcoat-button center speroroads-bottom">F1</a>
+      <a class="topcoat-button center speroroads-bottom">F2</a>
+      <a class="topcoat-button center speroroads-bottom">F3</a>
+      <a class="topcoat-button center speroroads-bottom">P1</a>
+      <a class="topcoat-button center speroroads-bottom">P2</a>
+      <a class="topcoat-button center speroroads-bottom">P3</a>
+      <a class="topcoat-button center speroroads-bottom">C1</a>
+      <a class="topcoat-button center speroroads-bottom">C2</a>
+      <a class="topcoat-button center speroroads-bottom">C3</a>
+      <a class="topcoat-button center speroroads-bottom">R1</a>
+      <a class="topcoat-button center speroroads-bottom">R2</a>
+      <a class="topcoat-button center speroroads-bottom">R3</a>
+      <br>
+      <h1>{{occurrence.name || "Nome"}}</h1>
+      <br>
 
       <label>Nome:</label><br>
       <input type="text" ng-model="occurrence.name" class="topcoat-text-input three-quarters"/>
