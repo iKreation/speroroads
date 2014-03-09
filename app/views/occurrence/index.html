@@ -39,8 +39,10 @@
                 <!-- order is reversed created timestamp -->
                 <li class="topcoat-list__item" ng-show="!occ.length">Sem registo</li>
 
-                <li class="topcoat-list__item" hm-tap="openOccurrence(o.id)"  ng-repeat="o in occ | orderBy: '-createddate'">
+                <li class="topcoat-list__item" ng-repeat="o in occ | orderBy: '-createddate'">
                   {{ instances[o.id].name }}
+                  <button hm-tap="openOccurrence(o.id)" style="float:right">Detalhes</button>
+
                 </li>
               </ul>
             </div>

@@ -132,13 +132,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
         var occurrence = {
           id : $event.target.innerHTML,
-          location : position,
+          position : position,
           createddate : new Date(),
           type: 'single'
         }
 
         $scope.occ.push(occurrence);
 
+        /* refresh */ 
         $scope.$apply();
 
         /* create layer to easily remove marker */
@@ -150,7 +151,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   $scope.openOccurrence = function(id) {
-
     // clear markers if they exist
     if($scope.currentMarker) {
       map.removeLayer($scope.currentMarker);
@@ -163,14 +163,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
 
     // find it 
-    for(var o in occ) {
-      if(parseInt(occ[o].id) == parseInt(id)) {
-        
+    for(var o in $scope.occ) {
+      if(parseInt($scope.occ[o].id) == parseInt(id)) {
         // check the type
-        if(occ[o].type == 'single') {
-
-          $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
-
+        if($scope.occ[o].type == 'single') {
+          pos = $scope.occ[o].position;
+          $scope.currentMarker = L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map);
+          map.fitBounds([[pos.coords.latitude, pos.coords.longitude]]);
         } else {
 
 
