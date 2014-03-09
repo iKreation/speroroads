@@ -17,6 +17,9 @@
             {{ occurrence.name }}
             <button hm-tap="open(occurrence.id)" style="float:right">Detalhes</button>
           </li>
+          <li class="topcoat-list__item">
+            {{ watchStatus }}
+          </li>
         </ul>
       </div>
     </div>
@@ -34,6 +37,8 @@
             <div class="topcoat-list__container" style="width:98%;max-height:280px;">
                 <ul class="topcoat-list">
                 <!-- order is reversed created timestamp -->
+                <li class="topcoat-list__item" ng-show="!occ.length">Sem registo</li>
+
                 <li class="topcoat-list__item" ng-repeat="o in occ | orderBy: '-createddate'">
                   {{ instances[o.id].name }}
                 </li>
@@ -45,7 +50,7 @@
             <div class="spinner" ng-show="loading"></div>
               <form class="simple-form">
                 <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">11</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">12</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="startRoad($event)">12</button>
                 <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">13</button>
                 <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">21</button>
                 <button class="topcoat-button--large speroroads-bottom" hm-tap="start($event)">22</button>

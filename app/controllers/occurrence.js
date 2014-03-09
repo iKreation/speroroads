@@ -1,7 +1,6 @@
 // Since we are using the Cordova SQLite plugin, initialize AngularJS only after deviceready
 document.addEventListener("deviceready", function() {
   angular.bootstrap(document, ['occurrenceApp']);
-
 });
 
 var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouchevents']);
@@ -13,9 +12,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.occurrences = [];
   /* individual occ */ 
   $scope.occ = [];
+  $scope.currentMarker = null;
+  /* instances state array */
   $scope.instances = {
     '11' : {'name' : 'Rodeiras - Tipo 1'},
-    '12' : {'name' : 'Rodeiras - Tipo 2'},
+    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false, 'points': {}, 'watch_id': null},
     '13' : {'name' : 'Rodeiras - Tipo 3'},
     '21' : {'name' : 'Fendilhamento - Tipo 1'},
     '22' : {'name' : 'Fendilhamento - Tipo 2'},
@@ -32,14 +33,61 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   var map = L.map('map-container').setView([40.20641, -8.409745], 13);
-  
+  var markersLayer = L.layerGroup();
+
   L.tileLayer('http://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: 'Yeah right OSM.',
       maxZoom: 18
   }).addTo(map);
 
 
+
+
+
   /* START AND STOP EVENT HANDLERS */ 
+
+  $scope.startRoad = function($event) {
+    var start, interval, stop;
+    var id = $event.target.innerHTML;
+
+    /* if it's watching something stops */
+    if($scope.instances[id].watching) {
+      $scope.instances[id].watching = false;
+      navigator.geolocation.clearWatch($scope.instances[id].watch_id);
+      $scope.instances[id].watch_id = null;
+      /* draw the line */
+      var path = [];
+      var pathObject = $scope.instances[id].points;
+      for(var p in pathObject) {
+        path.push = [pathObject[p].coords.latitude, pathObject[p].coords.longitude];
+      }
+
+      var polyline = L.polyline(path, {color: 'red'}).addTo(map);
+
+      /* clear points */ 
+      $scope.instances[id].points = {};
+      /* stop watching */ 
+      $scope.watchStatus = "not watching";
+
+    } else {
+      $scope.instances[id].watching = true;
+      /* starts the watcher */ 
+      var options = { timeout: 30000, enableHighAccuracy: true };
+      $scope.instances[id].watch_id = navigator.geolocation.watchPosition(
+        function(position) {
+          $scope.instances[id].points.push(position);
+          console.log("position: " + position);
+        }, 
+        function(error) {
+          alert(error);
+        }, 
+        options);
+      $scope.watchStatus = "watching";
+    }
+  };
+
+
+  /* SINGLE POINT INSTANCE */ 
 
   $scope.start = function($event) {
 
@@ -49,18 +97,22 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           location : position,
           createddate : new Date()
         }
-
-        var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+        
+        if($scope.currentMarker) {
+          map.removeLayer($scope.currentMarker);
+        }
 
         $scope.occ.push(occurrence);
+        /* create layer to easily remove marker */
+        $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
       }, 
       function(error) {
         alert(error);
       });
-
   };
 
-  $scope.stop = function(id) {
+  /* SAVE CURRENT STATE */ 
+  $scope.save = function(id) {
 
   };
 
