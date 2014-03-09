@@ -54,6 +54,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       // clear if there's something
       if($scope.currentMarker) {
         map.removeLayer($scope.currentMarker);
+        $scope.currentMarker = null;
       }
 
       // updates the flag
@@ -100,6 +101,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       // remove if we have something
       if($scope.currentMarker) {
         map.removeLayer($scope.currentMarker);
+        $scope.currentMarker = null;
       }
 
       // just a flag to check wether we'r watching or not
@@ -112,6 +114,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           // remove the last one
           if($scope.currentMarker) {
             map.removeLayer($scope.currentMarker);
+            $scope.currentMarker = null;
           }
 
           $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
@@ -138,6 +141,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         // clear markers if they exist
         if($scope.currentMarker) {
           map.removeLayer($scope.currentMarker);
+          $scope.currentMarker = null;
         }
 
         // clear polyline if they exist
@@ -322,7 +326,6 @@ occurrenceApp.controller('NewCtrl', function ($scope, Occurrence) {
     $event.classList.add("topcoat-button--cta");
     console.log($event.target.innerHTML);
     console.log($event.target.innerHTML);
-
   };
 
   $scope.close = function() {
@@ -351,11 +354,8 @@ occurrenceApp.controller('NewCtrl', function ($scope, Occurrence) {
       alert("Error when creating the object, is SQLite configured correctly?");
 
     });
-
   }
-
   $scope.occurrence = {};
-
 });
 
 
