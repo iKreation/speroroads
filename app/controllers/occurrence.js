@@ -5,7 +5,6 @@ document.addEventListener("deviceready", function() {
 
 var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouchevents']);
 
-// Index: http://localhost/views/occurrence/index.html
 occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Will rotate to every direction
   steroids.view.setAllowedRotations([0,180,-90,90]);  
@@ -43,19 +42,27 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       maxZoom: 18
   }).addTo(map);
 
-  // START AND STOP EVENT HANDLERS
+  $scope.clearLayers = function() {
+    // clear markers if they exist
+    if($scope.currentMarker) {
+      map.removeLayer($scope.currentMarker);
+      $scope.currentMarker = null;
+    }
+    // clear polyline if they exist
+    if($scope.currentPolyline) {
+      map.removeLayer($scope.currentPolyline);
+      $scope.currentPolyline = null;
+    }
+  };
 
+  // START AND STOP EVENT HANDLERS
   $scope.startRoad = function($event) {
     var id = $event.target.innerHTML;
 
     // if it's watching something stops
     if($scope.instances[id].watching) {
 
-      // clear if there's something
-      if($scope.currentMarker) {
-        map.removeLayer($scope.currentMarker);
-        $scope.currentMarker = null;
-      }
+      $scope.clearLayers();
 
       // updates the flag
       $scope.instances[id].watching = false;
@@ -88,7 +95,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       /* refresh */ 
       $scope.$apply();
 
-
       $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
       // zoom the map to the polyline
       map.fitBounds($scope.currentPolyline.getBounds());
@@ -99,25 +105,21 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
     } else {
       // remove if we have something
-      if($scope.currentMarker) {
-        map.removeLayer($scope.currentMarker);
-        $scope.currentMarker = null;
-      }
+      $scope.clearLayers();
 
       // just a flag to check wether we'r watching or not
       $scope.instances[id].watching = true;
 
       // starts the watcher 
       var options = { timeout: 30000, enableHighAccuracy: true };
+      
       $scope.instances[id].watch_id = navigator.geolocation.watchPosition(
         function(position) {
           // remove the last one
-          if($scope.currentMarker) {
-            map.removeLayer($scope.currentMarker);
-            $scope.currentMarker = null;
-          }
+          $scope.clearLayers();
 
-          $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+          var pos = [position.coords.latitude, position.coords.longitude];
+          $scope.currentMarker = L.marker(pos).addTo(map);
 
           // for every location update add the point to the 
           // updated state of the instance object
@@ -129,7 +131,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         }, 
         options);
       steroids.view.navigationBar.show("Speroroads :: Localizando...");
-
     }
   };
 
@@ -138,52 +139,35 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.save = function($event) {
 
     navigator.geolocation.getCurrentPosition(function(position) {  
-        // clear markers if they exist
-        if($scope.currentMarker) {
-          map.removeLayer($scope.currentMarker);
-          $scope.currentMarker = null;
-        }
+      // clear markers if they exist
+      $scope.clearLayers();
 
-        // clear polyline if they exist
-        if($scope.currentPolyline) {
-          map.removeLayer($scope.currentPolyline);
-          $scope.currentPolyline = null;
-        }
+      var occurrence = {
+        id : $event.target.innerHTML,
+        position : position,
+        path : null,
+        createddate : new Date(),
+        type: 'single'
+      }
 
-        var occurrence = {
-          id : $event.target.innerHTML,
-          position : position,
-          path : null,
-          createddate : new Date(),
-          type: 'single'
-        }
+      var pos = [position.coords.latitude, position.coords.longitude];
+      /* create layer to easily remove marker */
+      $scope.currentMarker = L.marker(pos).addTo(map);
 
-        /* create layer to easily remove marker */
-        $scope.currentMarker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(map);
+      $scope.occ.push(occurrence);
 
-        $scope.occ.push(occurrence);
-
-        /* refresh */ 
-        $scope.$apply();
-        steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.innerHTML].name);
-      }, 
-      function(error) {
-        alert(error);
-      });
+      /* refresh */ 
+      $scope.$apply();
+      steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.innerHTML].name);
+    }, 
+    function(error) {
+      alert(error);
+    });
   };
 
   $scope.openOccurrence = function(id) {
-    // clear markers if they exist
-    if($scope.currentMarker) {
-      map.removeLayer($scope.currentMarker);
-      $scope.currentMarker = null;
-    }
-
-    // clear polyline if they exist
-    if($scope.currentPolyline) {
-      map.removeLayer($scope.currentPolyline);
-      $scope.currentPolyline = null;
-    }
+    
+    $scope.clearLayers();
 
     // find it 
     for(var o in $scope.occ) {
@@ -202,16 +186,27 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           map.fitBounds($scope.currentPolyline.getBounds());
 
         }
-
         steroids.view.navigationBar.show("Speroroads :: Vendo " + $scope.instances[$scope.occ[o].id].name);
-
       }
     }
   };
 
   /* SAVE CURRENT STATE */ 
   $scope.saveToPersistent = function(id) {
+    localStorage.setItem('occurrences', $scope.occ);
+  };
 
+  $scope.loadFromPersistent = function(id) {
+    $scope.occ = localStorage.getItem('occurrences');
+    $scope.$apply();
+  };
+
+  $scope.restartState = function() {
+    //
+  };
+
+  $scope.clearPersistent = function() {
+    localStorage.clear();
   };
 
   // Helper function for opening new webviews
