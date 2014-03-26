@@ -8,10 +8,16 @@ var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouch
 occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Will rotate to every direction
   steroids.view.setAllowedRotations([0,180,-90,90]);  
-  // Populated by $scope.loadOccurrences
-  $scope.occurrences = [];
+  
+  // Current selected route
+  $scope.currentRoute = null;
+
+  // Populated by $scope.loadFromPersistence
+  $scope.routes = [];
+
   // individual occ
-  $scope.occ = []; 
+  //$scope.occ = []; 
+
   $scope.currentMarker = null;
   $scope.currentPolyline = null;
   // instances state array
@@ -57,112 +63,155 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   // START AND STOP EVENT HANDLERS
   $scope.startRoad = function($event) {
-    var id = $event.target.innerHTML;
 
-    // if it's watching something stops
-    if($scope.instances[id].watching) {
+    if ($scope.currentRoute != null) {
+      var id = $event.target.innerHTML;
 
-      $scope.clearLayers();
+      // if it's watching something stops
+      if($scope.instances[id].watching) {
 
-      // updates the flag
-      $scope.instances[id].watching = false;
+        $scope.clearLayers();
 
-      // stop watching
-      navigator.geolocation.clearWatch($scope.instances[id].watch_id);
-      $scope.instances[id].watch_id = null;
-      
-      // draw the line 
-      var path = [];
-      var pathObject = $scope.instances[id].points;
+        //$event.target.attr('class','topcoat-button--large speroroads-bottom');
 
-      // get the points from current state of the instance 
-      // creates the array and draws the polyline
-      for(var p in pathObject) {
-        path.push([pathObject[p].coords.latitude, pathObject[p].coords.longitude]);
+        // updates the flag
+        $scope.instances[id].watching = false;
+
+        // stop watching
+        navigator.geolocation.clearWatch($scope.instances[id].watch_id);
+        $scope.instances[id].watch_id = null;
+        
+        // draw the line 
+        var path = [];
+        var pathObject = $scope.instances[id].points;
+
+        // get the points from current state of the instance 
+        // creates the array and draws the polyline
+        for(var p in pathObject) {
+          path.push([pathObject[p].coords.latitude, pathObject[p].coords.longitude]);
+        }
+
+        // save the occurrence
+        var occurrence = {
+          id : event.target.innerHTML,
+          position : null,
+          path : path,
+          createddate : new Date(),
+          type: 'path'
+        }
+
+        $scope.routes[$scope.currentRoute].push(occurrence);
+
+        /* refresh */ 
+        $scope.$apply();
+
+        $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
+        // zoom the map to the polyline
+        map.fitBounds($scope.currentPolyline.getBounds());
+        // clear points  
+        $scope.instances[id].points = [];
+        // stop watching 
+        steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[id].name);
+
+      } else {
+        // remove if we have something
+        $scope.clearLayers();
+
+        // just a flag to check wether we'r watching or not
+        $scope.instances[id].watching = true;
+
+        // starts the watcher 
+        var options = { timeout: 30000, enableHighAccuracy: true };
+        
+        $scope.instances[id].watch_id = navigator.geolocation.watchPosition(
+          function(position) {
+            // remove the last one
+            $scope.clearLayers();
+
+            var pos = [position.coords.latitude, position.coords.longitude];
+            $scope.currentMarker = L.marker(pos).addTo(map);
+
+            // for every location update add the point to the 
+            // updated state of the instance object
+
+            $scope.instances[id].points.push(position);
+          }, 
+          function(error) {
+            alert(error);
+          }, 
+          options);
+        steroids.view.navigationBar.show("Speroroads :: Localizando...");
       }
-
-      // save the occurrence
-      var occurrence = {
-        id : $event.target.innerHTML,
-        position : null,
-        path : path,
-        createddate : new Date(),
-        type: 'path'
-      }
-
-      $scope.occ.push(occurrence);
-
-      /* refresh */ 
-      $scope.$apply();
-
-      $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
-      // zoom the map to the polyline
-      map.fitBounds($scope.currentPolyline.getBounds());
-      // clear points  
-      $scope.instances[id].points = [];
-      // stop watching 
-      steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[id].name);
-
     } else {
-      // remove if we have something
-      $scope.clearLayers();
-
-      // just a flag to check wether we'r watching or not
-      $scope.instances[id].watching = true;
-
-      // starts the watcher 
-      var options = { timeout: 30000, enableHighAccuracy: true };
-      
-      $scope.instances[id].watch_id = navigator.geolocation.watchPosition(
-        function(position) {
-          // remove the last one
-          $scope.clearLayers();
-
-          var pos = [position.coords.latitude, position.coords.longitude];
-          $scope.currentMarker = L.marker(pos).addTo(map);
-
-          // for every location update add the point to the 
-          // updated state of the instance object
-
-          $scope.instances[id].points.push(position);
-        }, 
-        function(error) {
-          alert(error);
-        }, 
-        options);
-      steroids.view.navigationBar.show("Speroroads :: Localizando...");
+      alert('You need to select or create a new route to add occurrences.');
     }
+  };
+
+  /* SAVE OCCURRENCES LIST TO OPEN ROUTE */
+  $scope.saveRoute = function($event) {
+    $scope.currentRoute = null;
+    
+    /* Clean occurrences */
+    // TO BE DELETED
+    //$scope.clearOccurrences();
+
+    $scope.apply();
   };
 
   /* SINGLE POINT INSTANCE */ 
 
   $scope.save = function($event) {
+    if ($scope.currentRoute != null) {
+      navigator.geolocation.getCurrentPosition(function(position) {  
+        // clear markers if they exist
+        $scope.clearLayers();
 
-    navigator.geolocation.getCurrentPosition(function(position) {  
-      // clear markers if they exist
-      $scope.clearLayers();
+        var occurrence = {
+          id : $event.target.attributes.rel.value,
+          position : position,
+          path : null,
+          createddate : new Date(),
+          type: 'single'
+        }
 
-      var occurrence = {
-        id : $event.target.innerHTML,
-        position : position,
-        path : null,
-        createddate : new Date(),
-        type: 'single'
-      }
+        var pos = [position.coords.latitude, position.coords.longitude];
+        /* create layer to easily remove marker */
+        $scope.currentMarker = L.marker(pos).addTo(map);
 
-      var pos = [position.coords.latitude, position.coords.longitude];
-      /* create layer to easily remove marker */
-      $scope.currentMarker = L.marker(pos).addTo(map);
+        //$scope.occ.push(occurrence);
+        $scope.routes[$scope.currentRoute].push(occurrence);
 
-      $scope.occ.push(occurrence);
+        /* refresh */ 
+        $scope.$apply();
+        steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.innerHTML].name);
+      }, 
+      function(error) {
+        alert(error);
+      });
+    } else {
+      alert("You need to select or create a new route to add occurrences.");
+    }
+  };
 
-      /* refresh */ 
-      $scope.$apply();
-      steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.innerHTML].name);
-    }, 
-    function(error) {
-      alert(error);
-    });
+  $scope.newRoute = function() {
+    //alert("Trying to creates a route!");
+
+    var route_id = $scope.routes.length + 1;
+
+    var route = {
+      id: route_id,
+      name: "Name #"+route_id,
+      occurrences: []
+    }
+
+    $scope.routes.push(route);
+
+    /* MADNESS */
+    /* TO DELETE AND UPDATE */
+    $scope.currentRoute = $scope.routes.length-1;
+
+    $scope.apply();
+    alert("New route created!");
   };
 
   $scope.openOccurrence = function(id) {
@@ -193,17 +242,28 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   /* SAVE CURRENT STATE */ 
   $scope.saveToPersistent = function(id) {
-    localStorage.setItem('occurrences', $scope.occ);
+    localStorage.setItem('routes', $scope.occ);
   };
 
   $scope.loadFromPersistent = function(id) {
-    $scope.occ = localStorage.getItem('occurrences');
+    $scope.routes = localStorage.getItem('routes');
+    if ($scope.routes == null) {
+      $scope.routes = [];
+    }
     $scope.$apply();
   };
 
   $scope.restartState = function() {
     //
   };
+
+  /* Clear Occurrences */
+  /* TO BE DELETED */
+  /*
+  $scope.clearOccurrences = function() {
+    $scope.occ.length = 0;
+    $scope.occ = [];
+  },*/
 
   $scope.clearPersistent = function() {
     localStorage.clear();
@@ -217,7 +277,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   /* START AND STOP EVENT HANDLERS */ 
 
-  $scope.loadOccurrences = function() {
+  /*$scope.loadOccurrences = function() {
     $scope.loading = true;
 
     persistence.clean();  // Clean persistence.js cache before making a query
@@ -228,16 +288,20 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       $scope.loading = false;
       $scope.$apply();
     });
-  };
+  };*/
 
   // Fetch all objects from the backend (see app/models/occurrence.js)
-  $scope.loadOccurrences();
+  //$scope.loadOccurrences();
+  
+  // Fetch all objects from LocalStorage
+  $scope.loadFromPersistent();
 
   // Get notified when an another webview modifies the data and reload
   window.addEventListener("message", function(event) {
     // reload data on message with reload status
     if (event.data.status === "reload") {
-      $scope.loadOccurrences();
+      //$scope.loadOccurrences();
+      $scope.loadFromPersistent();
     };
   });
 
@@ -306,15 +370,15 @@ occurrenceApp.controller('ShowCtrl', function ($scope, Occurrence) {
     steroids.modal.show(webView);
   }
 
-  steroids.view.navigationBar.setButtons({
+  /*steroids.view.navigationBar.setButtons({
     right: [editButton]
-  });
+  });*/
 });
 
 
 // New: http://localhost/views/occurrence/new.html
 
-occurrenceApp.controller('NewCtrl', function ($scope, Occurrence) {
+/*occurrenceApp.controller('NewCtrl', function ($scope, Occurrence) {
 
   $scope.startOccurrence = function($event) {
     $event.classList.remove("topcoat-button");
@@ -352,7 +416,7 @@ occurrenceApp.controller('NewCtrl', function ($scope, Occurrence) {
   }
   $scope.occurrence = {};
 });
-
+*/
 
 // Edit: http://localhost/views/occurrence/edit.html
 

@@ -13,6 +13,7 @@
   "dependencies": {
     "steroids-js": "3.1.x",
     "angular": "1.0.7",
-    "underscore": "1.5.1"
+    "underscore": "1.5.1",
+    "jquery": "2.1.x"
   }
 }

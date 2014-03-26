@@ -13,14 +13,17 @@
       <div class="topcoat-list__container">
           <ul class="topcoat-list">
           <!-- order is reversed created timestamp -->
-          <li class="topcoat-list__item" ng-repeat="occurrence in occurrences | orderBy: '-createddate'">
-            {{ occurrence.name }}
+          <li class="topcoat-list__item" ng-repeat="route in routes | orderBy: '-createddate'">
+            {{ routes.name }}
             <button hm-tap="open(occurrence.id)" style="float:right">Detalhes</button>
           </li>
           <li class="topcoat-list__item">
             {{ watchStatus }}
           </li>
         </ul>
+      </div>
+      <div id="routes-btn_container">
+         <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="newRoute($event)">New Route</button>
       </div>
     </div>
 
@@ -37,9 +40,9 @@
             <div class="topcoat-list__container" style="width:98%;max-height:280px;">
                 <ul class="topcoat-list">
                 <!-- order is reversed created timestamp -->
-                <li class="topcoat-list__item" ng-show="!occ.length">Sem registo</li>
+                <li class="topcoat-list__item" ng-show="!routes[currentRoute].length">Sem registo</li>
 
-                <li class="topcoat-list__item" ng-repeat="o in occ | orderBy: '-createddate'">
+                <li class="topcoat-list__item" ng-repeat="o in routes[currentRoute]['occurrences'] | orderBy: '-createddate'">
                   {{ instances[o.id].name }}
                   <button hm-tap="openOccurrence(o.id)" style="float:right">Detalhes</button>
 
@@ -51,23 +54,23 @@
           <div class="col-md-7 no-padding" id="commander">
             <div class="spinner" ng-show="loading"></div>
               <form class="simple-form">
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">11</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="startRoad($event)">12</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">13</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">21</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">22</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">23</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">31</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">32</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">33</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">41</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">42</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">43</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">51</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">52</button>
-                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)">53</button>
-                <button class="topcoat-button--large--cta speroroads-bottom">Guardar</button>
-                <button class="topcoat-button--large speroroads-bottom">Terminar</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="11">R1</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="startRoad($event)" rel="12">R2</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="13">R3</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="21">F1</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="22">F2</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="23">F3</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="31">P1</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="32">P2</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="33">P3</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="41">C1</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="42">C2</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="43">C3</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="51">R1</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="52">R2</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="53">R3</button>
+                <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="saveRoute($event)">Guardar</button>
+                <button class="topcoat-button--large speroroads-bottom" hm-tap="export($event)">Exportar</button>
                 <br>
               </form>
           </div> <!-- col 12 -->
