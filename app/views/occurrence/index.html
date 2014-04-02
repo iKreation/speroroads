@@ -10,13 +10,10 @@
 
   <div class="row">
     <div class="col-md-3" style="padding-right:0px;">
-      <div id="routes-btn_container">
-         <button class="topcoat-button--small--cta speroroads-bottom" hm-tap="newRoute($event)">New Route</button>
-      </div>
       <div class="topcoat-list__container list-evaluation">
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
-            <li class="topcoat-list__item" ng-show="!routes.length">No routes</li>
+            <li class="topcoat-list__item" hm-tap="newRoute($event)" style="text-align:center">++ New Route ++</li>
             <li class="topcoat-list__item" hm-tap="open(route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
             {{ route.name }}
             <button hm-tap='delete(route.id)' style="float:right">Eliminar</button>
@@ -32,8 +29,7 @@
     <div class="col-md-3">
       <div class="row" id="routeoptions">
         <div class="col-md-8" style="margin-left:15px;">
-            <strong>#</strong><br />
-            <input type="" value="{{currentOccurrences.length}}">
+            <strong># Ocorrências</strong><br />
 
             <strong>Pavimento</strong><br />
             <input type='text' class='topcoat-text-input' placeholder='Pavimento' value=''>
@@ -60,7 +56,7 @@
     </div>
     <div class="col-md-9">
       <div class="row">
-        <div class="col-md-5 no-padding">
+        <div class="col-md-5 no-padding" style="padding-right:10px;">
           <div class="topcoat-list__container list-evaluation" id="listoccurrences">
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->

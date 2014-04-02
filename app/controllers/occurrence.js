@@ -96,6 +96,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           id : event.target.attributes.rel.value,
           position : null,
           path : path,
+          name: $scope.instances[id].name,
           createddate : new Date(),
           type: 'path'
         }
@@ -231,7 +232,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.currentOccurrences.length = 0;
     $scope.currentOccurrences = [];
     $scope.saveToPersistent();
-    alert("SAVED!");
   },
 
   $scope.addOccurrence = function(occurrence) {
@@ -295,6 +295,17 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   $scope.restartState = function() {
     //
+  };
+
+  $scope.delete = function(id) {
+    for (var i = 0; i < $scope.routes.length; i++) {
+      if($scope.routes[i].id == id) {
+        $scope.routes.splice(i, 1);
+        $scope.saveRoute({});
+        alert("Route removed.")
+      }
+    };
+
   };
 
   /* Clear Occurrences */
