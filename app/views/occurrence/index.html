@@ -19,7 +19,7 @@
             <li class="topcoat-list__item" ng-show="!routes.length">No routes</li>
             <li class="topcoat-list__item" ng-repeat="route in routes | orderBy: '-createddate'">
             {{ route.name }}
-            <button hm-tap="open(occurrence.id)" style="float:right">Detalhes</button>
+            <button hm-tap="open(route.id)" style="float:right">Detalhes</button>
             </li>
         </ul>
       </div>
@@ -41,7 +41,7 @@
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
             <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
-            <li class="topcout-list__item" ng-repeat="occur in currentOccurrences" >
+            <li class="topcoat-list__item" ng-repeat="occur in currentOccurrences" hm-tap='openOccurrence(occur.id)'>
               {{ instances[occur.id].name }}
             </li>
         </ul>

@@ -253,23 +253,24 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.clearLayers();
 
     // find it 
-    for(var o in $scope.occ) {
-      if(parseInt($scope.occ[o].id) == parseInt(id)) {
+    
+    for(var o in $scope.currentOccurrences) {
+      if(parseInt($scope.currentOccurrences[o].id) == parseInt(id)) {
         // check the type
-        if($scope.occ[o].type == 'single') {
-          pos = $scope.occ[o].position;
+        if($scope.currentOccurrences[o].type == 'single') {
+          pos = $scope.currentOccurrences[o].position;
           $scope.currentMarker = L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map);
           map.fitBounds([[pos.coords.latitude, pos.coords.longitude]]);
         } else {
 
-          var path = $scope.occ[o].path;
+          var path = $scope.currentOccurrences[o].path;
           
           $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
           // zoom the map to the polyline
           map.fitBounds($scope.currentPolyline.getBounds());
 
         }
-        steroids.view.navigationBar.show("Speroroads :: Vendo " + $scope.instances[$scope.occ[o].id].name);
+        steroids.view.navigationBar.show("Speroroads :: Vendo " + $scope.instances[$scope.currentOccurrences[o].id].name);
       }
     }
   };
@@ -304,8 +305,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   // Helper function for opening new webviews
   $scope.open = function(id) {
-    webView = new steroids.views.WebView("/views/occurrence/show.html?id="+id);
-    steroids.layers.push(webView);
+
+    
   };
 
   /* START AND STOP EVENT HANDLERS */ 
