@@ -184,6 +184,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
+  $scope.renderRoute = function(route) {
+    $scope.currentRoute = route.id;
+    $scope.currentOccurrences = route.occurrences;
+    $scope.routeDetails = routeDetails;
+  },
+
   $scope.newRoute = function() {
 
     var route_id = $scope.routes.length + 1;
@@ -277,11 +283,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   /* SAVE CURRENT STATE */ 
   $scope.saveToPersistent = function(id) {
-    localStorage.setItem('routes', $scope.routes);
+    localStorage.setItem('routes', JSON.stringify($scope.routes));
   };
 
   $scope.loadFromPersistent = function(id) {
-    $scope.routes = localStorage.getItem('routes');
+    $scope.routes = JSON.parse(localStorage.getItem('routes'));
     if ($scope.routes == null) {
       $scope.routes = [];
     }
@@ -305,8 +311,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   // Helper function for opening new webviews
   $scope.open = function(id) {
-
-    
+    for (var i = 0; i < $scope.routes.length; i++) {
+      if($scope.routes[i].id == id) {
+        $scope.renderRoute($scope.routes[i]);
+        return true;
+      }
+    };
   };
 
   /* START AND STOP EVENT HANDLERS */ 
@@ -358,145 +368,5 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   steroids.view.navigationBar.setButtons({
     right: [addButton]
   });
-
-});
-
-
-// Show: http://localhost/views/occurrence/show.html?id=<id>
-
-occurrenceApp.controller('ShowCtrl', function ($scope, Occurrence) {
-
-  // Helper function for loading occurrence data with spinner
-  $scope.loadOccurrence = function() {
-    $scope.loading = true;
-
-    persistence.clean(); // Clean persistence.js cache before making a query
-
-    // Fetch a single object from the database
-    Occurrence.findBy(persistence, 'id', steroids.view.params.id, function(occurrence) {
-      $scope.occurrence = occurrence;
-      $scope.loading = false;
-      steroids.view.navigationBar.show(occurrence.name);
-      $scope.$apply();
-    });
-
-  };
-
-  // Save current occurrence id to localStorage (edit.html gets it from there)
-  localStorage.setItem("currentOccurrenceId", steroids.view.params.id);
-
-  var occurrence = new Occurrence()
-  $scope.loadOccurrence()
-
-  // When the data is modified in the edit.html, get notified and update (edit will be on top of this view)
-  window.addEventListener("message", function(event) {
-    if (event.data.status === "reload") {
-      $scope.loadOccurrence();
-    };
-  });
-
-  // -- Native navigation
-  var editButton = new steroids.buttons.NavigationBarButton();
-  editButton.title = "Edit";
-
-  editButton.onTap = function() {
-    webView = new steroids.views.WebView("/views/occurrence/edit.html");
-    steroids.modal.show(webView);
-  }
-
-  /*steroids.view.navigationBar.setButtons({
-    right: [editButton]
-  });*/
-});
-
-
-// New: http://localhost/views/occurrence/new.html
-
-/*occurrenceApp.controller('NewCtrl', function ($scope, Occurrence) {
-
-  $scope.startOccurrence = function($event) {
-    $event.classList.remove("topcoat-button");
-    $event.classList.add("topcoat-button--cta");
-    console.log($event.target.innerHTML);
-    console.log($event.target.innerHTML);
-  };
-
-  $scope.close = function() {
-    steroids.modal.hide();
-  };
-
-  $scope.create = function(options) {
-    $scope.loading = true;
-
-    var occurrence = new Occurrence(options);
-
-    // Add the new object to the database and then persist it with persistence.flush()
-    persistence.add(occurrence);
-    persistence.flush(function() {
-
-      // Notify index.html to reload data
-      var msg = { status: 'reload' };
-      window.postMessage(msg, "*");
-
-      $scope.close();
-      $scope.loading = false;
-
-    }, function() {
-      $scope.loading = false;
-
-      alert("Error when creating the object, is SQLite configured correctly?");
-
-    });
-  }
-  $scope.occurrence = {};
-});
-*/
-
-// Edit: http://localhost/views/occurrence/edit.html
-
-occurrenceApp.controller('EditCtrl', function ($scope, Occurrence) {
-
-  $scope.close = function() {
-    steroids.modal.hide();
-  };
-
-  $scope.update = function(options) {
-    $scope.loading = true;
-
-    var occurrence = new Occurrence(options);
-
-    // Update the database by adding the updated object, then persist the change with persistence.flush()
-    persistence.add(occurrence);
-    persistence.flush(function() {
-
-      window.setTimeout(function(){
-        // Notify show.html below to reload data
-        var msg = { status: "reload" };
-        window.postMessage(msg, "*");
-        $scope.close();
-      }, 1000);
-
-      $scope.loading = false;
-
-    });
-
-  };
-
-  // Helper function for loading occurrence data with spinner
-  $scope.loadOccurrence = function() {
-    $scope.loading = true;
-
-    var id  = localStorage.getItem("currentOccurrenceId");
-
-    // Fetch a single object from the database
-    Occurrence.findBy(persistence, 'id', id, function(occurrence) {
-      $scope.occurrence = occurrence;
-      $scope.loading = false;
-
-      $scope.$apply();
-    });
-  };
-
-  $scope.loadOccurrence();
 
 });

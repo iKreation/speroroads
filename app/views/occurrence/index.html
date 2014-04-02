@@ -9,7 +9,7 @@
 <div ng-controller="IndexCtrl" class="container-fluid no-padding">
 
   <div class="row">
-    <div class="col-md-3">
+    <div class="col-md-3" style="padding-right:0px;">
       <div id="routes-btn_container">
          <button class="topcoat-button--small--cta speroroads-bottom" hm-tap="newRoute($event)">New Route</button>
       </div>
@@ -17,9 +17,9 @@
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
             <li class="topcoat-list__item" ng-show="!routes.length">No routes</li>
-            <li class="topcoat-list__item" ng-repeat="route in routes | orderBy: '-createddate'">
+            <li class="topcoat-list__item" hm-tap="open(route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
             {{ route.name }}
-            <button hm-tap="open(route.id)" style="float:right">Detalhes</button>
+            <button hm-tap='delete(route.id)' style="float:right">Eliminar</button>
             </li>
         </ul>
       </div>
@@ -31,7 +31,31 @@
   <div class="row">
     <div class="col-md-3">
       <div class="row" id="routeoptions">
-        
+        <div class="col-md-8" style="margin-left:15px;">
+            <strong>#</strong><br />
+            <input type="" value="{{currentOccurrences.length}}">
+
+            <strong>Pavimento</strong><br />
+            <input type='text' class='topcoat-text-input' placeholder='Pavimento' value=''>
+            
+            <br />
+            <strong>Bermas pavim.</strong>
+            <label class='topcoat-switch'> 
+              <input type='checkbox' class='topcoat-switch__input'> <div class='topcoat-switch__toggle'></div>
+            </label>
+            
+            <br />
+            <strong>Largura da berma</strong><br />
+            <input type='text' class='topcoat-text-input' placeholder='Largura da berma' value=''>
+
+            <br />
+            <strong>Número de vias</strong><br />
+            <input type='text' class='topcoat-text-input' placeholder='Número de vias' value=''>
+
+            <br />
+            <strong>Largura total pav.</strong><br />
+            <input type='text' class='topcoat-text-input' placeholder='Largura total pav.' value=''>
+        </div>
       </div>
     </div>
     <div class="col-md-9">
@@ -42,7 +66,7 @@
             <!-- order is reversed created timestamp -->
             <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
             <li class="topcoat-list__item" ng-repeat="occur in currentOccurrences" hm-tap='openOccurrence(occur.id)'>
-              {{ instances[occur.id].name }}
+              {{ occur.name }}
             </li>
         </ul>
       </div>
