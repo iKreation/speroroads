@@ -10,11 +10,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   steroids.view.setAllowedRotations([0,180,-90,90]);  
   
   // Current selected route
-  $scope.currentRoute = null;
+  $scope.currentRoute = false;
 
   // Populated by $scope.loadFromPersistence
   $scope.routes = [];
-
+  $scope.currentOccurrences = [];
   // individual occ
   //$scope.occ = []; 
 
@@ -64,8 +64,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // START AND STOP EVENT HANDLERS
   $scope.startRoad = function($event) {
 
-    if ($scope.currentRoute != null) {
-      var id = $event.target.innerHTML;
+    if ($scope.currentRoute != false) {
+      var id = $event.target.attributes.rel.value;
 
       // if it's watching something stops
       if($scope.instances[id].watching) {
@@ -93,14 +93,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
         // save the occurrence
         var occurrence = {
-          id : event.target.innerHTML,
+          id : event.target.attributes.rel.value,
           position : null,
           path : path,
           createddate : new Date(),
           type: 'path'
         }
 
-        $scope.routes[$scope.currentRoute].push(occurrence);
+        $scope.addOccurrence(occurrence);
 
         /* refresh */ 
         $scope.$apply();
@@ -147,21 +147,10 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
-  /* SAVE OCCURRENCES LIST TO OPEN ROUTE */
-  $scope.saveRoute = function($event) {
-    $scope.currentRoute = null;
-    
-    /* Clean occurrences */
-    // TO BE DELETED
-    //$scope.clearOccurrences();
-
-    $scope.apply();
-  };
-
   /* SINGLE POINT INSTANCE */ 
 
   $scope.save = function($event) {
-    if ($scope.currentRoute != null) {
+    if ($scope.currentRoute != false) {
       navigator.geolocation.getCurrentPosition(function(position) {  
         // clear markers if they exist
         $scope.clearLayers();
@@ -179,11 +168,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         $scope.currentMarker = L.marker(pos).addTo(map);
 
         //$scope.occ.push(occurrence);
-        $scope.routes[$scope.currentRoute].push(occurrence);
+        $scope.addOccurrence(occurrence);
+        //$scope.currentOccurrences = $scope.getCurrentRoute().occurrences;
 
         /* refresh */ 
         $scope.$apply();
-        steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.innerHTML].name);
+
+        steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
       }, 
       function(error) {
         alert(error);
@@ -194,25 +185,67 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   $scope.newRoute = function() {
-    //alert("Trying to creates a route!");
 
     var route_id = $scope.routes.length + 1;
 
     var route = {
       id: route_id,
       name: "Name #"+route_id,
-      occurrences: []
+      occurrences: [],
+      options: {
+        pavimento: 'Tipo X',
+        separador: false,
+        bermas_pavimentadas: true,
+        largura_berma: 0.2,
+        n_vias: 3,
+        largura_total_pavimentada: 2.4,
+        largura_pavimentada_sentidos: [2.5, 5.6]
+      }
     }
 
     $scope.routes.push(route);
 
+    document.getElementById('routeoptions').innerHTML = "";
+    document.getElementById('routeoptions').innerHTML += "<div class='col-md-8'><strong>Pavimento</strong></div><div class='col-md-4'>"+route['options']['pavimento']+"</div>";
+    document.getElementById('routeoptions').innerHTML += "<div class='col-md-8'><strong>Bermas pavimentadas</strong></div><div class='col-md-4'>"+route['options']['bermas_pavimentadas']+"</div>";
+    document.getElementById('routeoptions').innerHTML += "<div class='col-md-8'><strong>Largura da berma</strong></div><div class='col-md-4'>"+route['options']['largura_berma']+"</div>";
+    document.getElementById('routeoptions').innerHTML += "<div class='col-md-8'><strong>Número de vias</strong></div><div class='col-md-4'>"+route['options']['n_vias']+"</div>";
+    document.getElementById('routeoptions').innerHTML += "<div class='col-md-8'><strong>Largura total pavimentada</strong></div><div class='col-md-4'>"+route['options']['largura_total_pavimentada']+"</div>";
+
     /* MADNESS */
     /* TO DELETE AND UPDATE */
-    $scope.currentRoute = $scope.routes.length-1;
+    $scope.currentRoute = route_id;
+    $scope.currentOccurrences.length = 0;
+    $scope.currentOccurrences = [];
+    //$scope.currentOccurrences = route.occurrences;
 
-    $scope.apply();
-    alert("New route created!");
   };
+
+  $scope.saveRoute = function($event) {
+    $scope.currentOccurrences.length = 0;
+    $scope.currentOccurrences = [];
+    alert("SAVED!");
+  },
+
+  $scope.addOccurrence = function(occurrence) {
+    for (var i = 0; i < $scope.routes.length; i++) {
+      if($scope.routes[i].id == $scope.currentRoute) {
+        $scope.routes[i].occurrences.push(occurrence);
+        $scope.currentOccurrences.push(occurrence);
+        return true;
+      }
+    };
+    return false;
+  },
+
+  $scope.getCurrentRoute = function() {
+    for (var i = 0; i < $scope.routes.length; i++) {
+      if($scope.routes[i].route_id == $scope.currentRoute) {
+        return $scope.routes[i];
+      }
+    };
+    return false;
+  },
 
   $scope.openOccurrence = function(id) {
     
@@ -242,7 +275,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   /* SAVE CURRENT STATE */ 
   $scope.saveToPersistent = function(id) {
-    localStorage.setItem('routes', $scope.occ);
+    localStorage.setItem('routes', $scope.routes);
   };
 
   $scope.loadFromPersistent = function(id) {
@@ -250,7 +283,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     if ($scope.routes == null) {
       $scope.routes = [];
     }
-    $scope.$apply();
   };
 
   $scope.restartState = function() {
