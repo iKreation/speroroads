@@ -224,6 +224,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.saveRoute = function($event) {
     $scope.currentOccurrences.length = 0;
     $scope.currentOccurrences = [];
+    $scope.saveToPersistent();
     alert("SAVED!");
   },
 
