@@ -9,16 +9,10 @@ document.addEventListener("deviceready", function() {
 
 var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouchevents']);
 
-/*
- *
- * Main and only controller atm
- *
- */
-
 occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Will rotate to every direction
-  steroids.view.setAllowedRotations([0,180,-90,90]);  
-  
+  steroids.view.setAllowedRotations([0,180,-90,90]); 
+
   // Route states
   $scope.currentRoute = null;
   $scope.currentRouteWatcher = null;
@@ -135,6 +129,10 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     options);
   };
 
+  /**
+   * stopsAndSavePathOccurrence stops the current watcher and save the path occurrence
+   * @param  int id is the type of instance referenced in $scope.instances
+   */
   $scope.stopsAndSavePathOccurrence = function(id) {
     $scope.clearLayers();
     // updates the flag
@@ -182,12 +180,17 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void changes the state of the app
    */
   $scope.triggerPathOcc = function($event) {
-    if ($scope.currentRoute != null) {
+    if ($scope.currentRoute) {
       var id = $event.target.attributes.rel.value;
+      var button = angular.element($event.target);
       // if it's watching something, stops
       if($scope.instances[id].watching) {
+        button.removeClass('topcoat-button--large--cta');
+        button.addClass('topcoat-button--large');
         $scope.stopsAndSavePathOccurrence(id);
       } else {
+        button.removeClass('topcoat-button--large');
+        button.addClass('topcoat-button--large--cta');
         $scope.startPathOccurrence(id);
       }
     } else {
@@ -202,6 +205,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.saveSingleOccurrence = function($event) {
     if ($scope.currentRoute != false) {
+      var id = $event.target.attributes.rel.value;
       navigator.geolocation.getCurrentPosition(function(position) {  
         // clear markers if they exist
         $scope.clearLayers();
@@ -213,13 +217,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         //$scope.occ.push(occurrence);
         $scope.addOccurrence({
           id : new Date().getTime(),
-          instance_id : $event.target.attributes.rel.value,
+          instance_id : id,
           position : position,
           path : null,
+          name: $scope.instances[id].name,
           createddate : new Date(),
           type: 'single',
         });
-        
+
         /* refresh */ 
         $scope.$apply();
         steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
@@ -268,7 +273,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.saveRoute = function($event) {
     $scope.currentOccurrences.length = 0;
     $scope.currentOccurrences = [];
-    $scope.saveToPersistent();
+    $scope.saveToPersistence();
   },
 
   /**
@@ -332,7 +337,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /* SAVE CURRENT STATE */ 
-  $scope.saveToPersistent = function(id) {
+  $scope.saveToPersistence = function(id) {
     localStorage.setItem('routes', JSON.stringify($scope.routes));
   };
 
@@ -347,10 +352,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
-  $scope.restartState = function() {
-    //
-  };
-
   $scope.delete = function(id) {
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
@@ -359,7 +360,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         alert("Route removed.")
       }
     };
-
   };
 
   /**

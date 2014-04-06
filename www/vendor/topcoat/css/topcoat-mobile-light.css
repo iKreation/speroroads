@@ -329,9 +329,10 @@ limitations under the License.
     <a class="topcoat-button--large--cta is-active" >Button</a>
     <a class="topcoat-button--large--cta is-disabled" >Button</a>
 */
+
 .topcoat-button--large--cta {
-  font-size: 1.3rem;
-  line-height: 4rem;
+  font-size: 1.7rem;
+  line-height: 2rem;
 }
 .topcoat-button--large-cta:disabled,
 .topcoat-button--large--cta.is-disabled {
