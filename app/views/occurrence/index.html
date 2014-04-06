@@ -3,12 +3,12 @@
   .list-evaluation { border-right:0px solid #333; padding-right:0px; min-height:100%;}
   .no-padding {padding:0px;}
   #map-container {min-height:400px; margin-bottom:10px;}
-  #commander {margin-right:0px;}
+  #commander {margin-right:0px;font-family:"Courier New", Courier, monospace;}
 </style>
 
 <div ng-controller="IndexCtrl" class="container-fluid no-padding">
 
-  <div class="row">
+  <div class="row" style="margin-right:0px;">
     <div class="col-md-3" style="padding-right:0px;">
       <div class="topcoat-list__container list-evaluation">
           <ul class="topcoat-list">
@@ -25,38 +25,46 @@
       
     </div>
   </div>
-  <div class="row">
+  <div class="row" style="margin-right:0px;">
     <div class="col-md-3">
+      <!--
       <div class="row" id="routeoptions">
         <div class="col-md-8" style="margin-left:15px;">
-            <strong># Ocorrências</strong><br />
-
             <strong>Pavimento</strong><br />
-            <input type='text' class='topcoat-text-input' placeholder='Pavimento' value=''>
+              <select class="topcoat-select">
+                <option value="1" ng-selected="1 == 3">Flexível</option>
+                <option value="2" ng-selected="2 == 3">Rígido</option>
+                <option value="3" ng-selected="3 == 3">Semirrígido</option>
+                <option value="4" ng-selected="4 == 3">Blocos de betão</option>
+                <option value="5" ng-selected="5 == 3">Paralelepípedos de rocha natural</option>
+                <option value="6" ng-selected="6 == 3">Outro</option>
+              </select>
             
             <br />
-            <strong>Bermas pavim.</strong>
-            <label class='topcoat-switch'> 
-              <input type='checkbox' class='topcoat-switch__input'> <div class='topcoat-switch__toggle'></div>
+            <label class="topcoat-checkbox">
+              <input type="checkbox">
+              <div class="topcoat-checkbox__checkmark"></div>
+              Bermas Pavi.
             </label>
             
             <br />
             <strong>Largura da berma</strong><br />
-            <input type='text' class='topcoat-text-input' placeholder='Largura da berma' value=''>
+            <input type='text' class='topcoat-text-input' placeholder='Largura da berma' value='{{currentOccurrence.options.bermas_pavimentadas}}'>
 
             <br />
             <strong>Número de vias</strong><br />
-            <input type='text' class='topcoat-text-input' placeholder='Número de vias' value=''>
+            <input type='text' class='topcoat-text-input' placeholder='Número de vias' value='{{currentOccurrence.options.n_vias}}'>
 
             <br />
             <strong>Largura total pav.</strong><br />
-            <input type='text' class='topcoat-text-input' placeholder='Largura total pav.' value=''>
+            <input type='text' class='topcoat-text-input' placeholder='Largura total pav.' value='{{currentOccurrence.options.largura_total_pavimentada}}'>
         </div>
       </div>
+      -->
     </div>
     <div class="col-md-9">
       <div class="row">
-        <div class="col-md-5 no-padding" style="padding-right:10px;">
+        <div class="col-md-4 no-padding" style="padding-right:10px;">
           <div class="topcoat-list__container list-evaluation" id="listoccurrences">
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
@@ -68,25 +76,25 @@
       </div>
         </div>
 
-        <div class="col-md-7 no-padding" id="commander">
+        <div class="col-md-8 no-padding" id="commander">
           <form class="simple-form">
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="11">R1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="startRoad($event)" rel="12">R2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="13">R3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="21">F1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="22">F2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="23">F3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="31">P1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="32">P2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="33">P3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="41">C1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="42">C2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="43">C3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="51">R1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="52">R2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="save($event)" rel="53">R3</button>
-            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="saveRoute($event)">Guardar</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="export($event)">Exportar</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="11">R1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="12">R2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="13">R3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="21">F1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="22">F2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="23">F3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="31">P1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="32">P2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="33">P3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="41">C1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="42">C2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="43">C3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="51">R1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="52">R2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="53">R3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveRoute($event)">Gravar</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="export($event)">Iniciar</button>
             <br>
           </form>
         </div>
