@@ -7,7 +7,8 @@ document.addEventListener("deviceready", function() {
   angular.bootstrap(document, ['occurrenceApp']);
 });
 
-var occurrenceApp = angular.module('occurrenceApp', ['OccurrenceModel', 'hmTouchevents']);
+var occurrenceApp = angular.module('occurrenceApp', 
+                                  ['OccurrenceModel', 'hmTouchevents']);
 
 occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Will rotate to every direction
@@ -39,7 +40,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // type of occurrences, check with backend
   $scope.instances = {
     '11' : {'name' : 'Rodeiras - Tipo 1'},
-    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false, 'points': [], 'watch_id': null},
+    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false, 
+                                          'points': [], 'watch_id': null},
     '13' : {'name' : 'Rodeiras - Tipo 3'},
     '21' : {'name' : 'Fendilhamento - Tipo 1'},
     '22' : {'name' : 'Fendilhamento - Tipo 2'},
@@ -116,7 +118,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.startRoute = function($event) {
     // gets the current selected route
-    $scope.currentRoute = $scope.getCurrentRoute();
+    var route = $scope.getCurrentRoute();
     
     if(!$scope.currentRouteWatcher) {
       // starts the watcher 
@@ -124,12 +126,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       var options = { timeout: 30000, enableHighAccuracy: true };
       
       // when starting a route, first sub route is the next element of the array
-      var lastIndex = $scope.currentRoute.subRoutes.length;
-      $scope.currentRoute.subRoutes[lastIndex] = [];
+      var lastIndex = route.subRoutes.length;
+      route.subRoutes[lastIndex] = [];
 
       $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
         function(position) {
-          $scope.currentRoute.subRoutes[lastIndex].push(position);
+          route.subRoutes[lastIndex].push(position);
         }, 
         function(error) {
           alert("erro a gravar a rota");
@@ -181,7 +183,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
-   * stopsAndSavePathOccurrence stops the current watcher and save the path occurrence
+   * stopsAndSavePathOccurrence stops the current watcher and save the path 
+   *                            occurrence
    * @param  int id is the type of instance referenced in $scope.instances
    */
   $scope.stopsAndSavePathOccurrence = function(id) {
@@ -262,6 +265,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         $scope.clearLayers();
 
         var pos = [position.coords.latitude, position.coords.longitude];
+        alert(position.coords.latitude);
         /* create layer to easily remove marker */
         $scope.currentMarker = L.marker(pos).addTo(map);
 
@@ -289,7 +293,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
-   * buildRouteFromSubRoutes this function gets all sub routes and join all arrays in one
+   * buildRouteFromSubRoutes this function gets all sub routes and join 
+   *                         all arrays in one
    * @param  Object route
    * @return Array
    */
@@ -320,7 +325,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       // zoom the map to the polyline
       map.fitBounds($scope.currentPolyline.getBounds());
     }
-  },
+  };
 
   /**
    * newRoute creates add's a new route to the current state of the app
@@ -329,7 +334,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.newRoute = function() {
     var dt = new Date();
     var route_id = dt;
-    var buildDate = dt.getDate() + '/'+ dt.getMonth() + '/' + dt.getFullYear() + ' ' + dt.getHours() + ':' + dt.getMinutes();
+    var buildDate = dt.getDate() + '/' + dt.getMonth() + '/' + dt.getFullYear() + ' ' + dt.getHours()  + ':' + dt.getMinutes();
     var route = {
       id: dt.getTime(),
       name: buildDate,
@@ -399,7 +404,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         // check the type
         if($scope.currentOccurrences[o].type == 'single') {
           pos = $scope.currentOccurrences[o].position;
-          $scope.currentMarker = L.marker([pos.coords.latitude, pos.coords.longitude]).addTo(map);
+          $scope.currentMarker = L.marker([pos.coords.latitude, 
+                                          pos.coords.longitude]).addTo(map);
           map.fitBounds([[pos.coords.latitude, pos.coords.longitude]]);
         } else {
 
@@ -453,6 +459,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.openRoute = function(id) {
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
+        $scope.clearLayers();
         $scope.renderRoute($scope.routes[i]);
         return true;
       }
