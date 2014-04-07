@@ -259,7 +259,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   $scope.renderRoute = function(route) {
     $scope.currentRoute = route.id;
-    // needs to loose the reference
+    // needs to loose the reference, that's why we clone the array with slice
     $scope.currentOccurrences = route.occurrences.slice(0);
   },
 
@@ -395,7 +395,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
         $scope.renderRoute($scope.routes[i]);
-        alert("opening" + id);
         return true;
       }
     };
