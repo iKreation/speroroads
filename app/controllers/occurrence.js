@@ -363,13 +363,21 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
-   * saveRoute saves the current state of the app to localStorage
+   * saveRoute saves the current state of the app to localStorage, note: it save ALL routes
    * @param Object $event 
    * @return void
    */
-  $scope.saveRoute = function($event) {
-    $scope.saveToPersistence();
-    alert("Salvou a rota");
+  $scope.saveRoute = function(obj) {
+    if(!$scope.trackingIsActive()) {
+      $scope.saveToPersistence();
+      if(!obj['delete']) {
+        alert("Salvou a rota.");
+      } else {
+        alert("Rota apagada.");
+      }
+    } else {
+      alert("Termine o registo da rota primeiro para gravar o seu estado.");
+    }
   },
 
   /**
@@ -452,8 +460,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
         $scope.routes.splice(i, 1);
-        $scope.saveRoute({});
-        alert("Route removed.")
+        $scope.saveRoute({'delete':true});
       }
     };
   };
