@@ -66,14 +66,45 @@
       <div class="row">
         <div class="col-md-4 no-padding" style="padding-right:10px;">
           <div class="topcoat-list__container list-evaluation" id="listoccurrences">
-          <ul class="topcoat-list">
-            <!-- order is reversed created timestamp -->
-            <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
-            <li class="topcoat-list__item" ng-repeat="occur in currentOccurrences" hm-tap='openOccurrence(occur.id)'>
+            <ul class="topcoat-list">
+              <!-- order is reversed created timestamp -->
+              <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
+              <li class="topcoat-list__item" ng-repeat="occur in currentOccurrences" hm-tap='openOccurrence(occur.id)'>
               {{ occur.name }}
-            </li>
-        </ul>
-      </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-8 no-padding" id="route-settings" ng-show="showRouteSettings">
+          <strong>Pavimento</strong><br />
+            <select class="topcoat-select">
+              <option value="1" ng-selected="1 == 3">Flexível</option>
+              <option value="2" ng-selected="2 == 3">Rígido</option>
+              <option value="3" ng-selected="3 == 3">Semirrígido</option>
+              <option value="4" ng-selected="4 == 3">Blocos de betão</option>
+              <option value="5" ng-selected="5 == 3">Paralelepípedos de rocha natural</option>
+              <option value="6" ng-selected="6 == 3">Outro</option>
+            </select>
+          
+          <br />
+          <label class="topcoat-checkbox">
+            <input type="checkbox">
+            <div class="topcoat-checkbox__checkmark"></div>
+            Bermas Pavi.
+          </label>
+          
+          <br />
+          <strong>Largura da berma</strong><br />
+          <input type='text' class='topcoat-text-input' placeholder='Largura da berma' value='{{currentOccurrence.options.bermas_pavimentadas}}'>
+
+          <br />
+          <strong>Número de vias</strong><br />
+          <input type='text' class='topcoat-text-input' placeholder='Número de vias' value='{{currentOccurrence.options.n_vias}}'>
+
+          <br />
+          <strong>Largura total pav.</strong><br />
+          <input type='text' class='topcoat-text-input' placeholder='Largura total pav.' value='{{currentOccurrence.options.largura_total_pavimentada}}'>
         </div>
 
         <div class="col-md-8 no-padding" id="commander">
@@ -93,8 +124,9 @@
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="51">R1</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="52">R2</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="53">R3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveRoute($event)">Gravar</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="export($event)">Iniciar</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveRoute($event)">GRA</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="startRoute($event)">INI</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="showRouteSettings = true">ALT</button>
             <br>
           </form>
         </div>

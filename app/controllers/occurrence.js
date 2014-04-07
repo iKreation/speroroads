@@ -102,6 +102,18 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
+   * triggerRoadSettings shows the form for road settings changes
+   * @param  Object $event 
+   */
+  $scope.triggerRoadSettings = function($event) {
+    document.getElementById('route-settings').style.visibility = 'hidden';
+    var roadSettingsDiv = angular.element('#route-settings');
+    var commanderDiv = angular.element('#commander');
+    commanderDiv.hide();
+    roadSettingsDiv.show();
+  };
+
+  /**
    * startPathOccurrence init GPS watcher and makes the relation to the instances
    * @param  int id is the type of instance referenced in $scope.instances
    */
@@ -204,8 +216,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void change the state of the app
    */
   $scope.saveSingleOccurrence = function($event) {
+    var id = $event.target.attributes.rel.value;
     if ($scope.currentRoute != false) {
-      var id = $event.target.attributes.rel.value;
       navigator.geolocation.getCurrentPosition(function(position) {  
         // clear markers if they exist
         $scope.clearLayers();
@@ -230,7 +242,15 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
       }, 
       function(error) {
-        alert(error);
+        $scope.addOccurrence({
+          id : new Date().getTime(),
+          instance_id : id,
+          position : [31,-8],
+          path : null,
+          name: $scope.instances[id].name,
+          createddate : new Date(),
+          type: 'single',
+        });
       });
     } else {
       alert("You need to select or create a new route to add occurrences.");
@@ -239,8 +259,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   $scope.renderRoute = function(route) {
     $scope.currentRoute = route.id;
-    $scope.currentOccurrences = route.occurrences;
-    //$scope.routeDetails = routeDetails;
+    // needs to loose the reference
+    $scope.currentOccurrences = route.occurrences.slice(0);
   },
 
   /**
@@ -258,9 +278,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       occurrences: [],
       options: {
       }
-    }
+    };
     $scope.routes.push(route);
-    $scope.currentRoute = route_id;
+    $scope.currentRoute = route.id;
     $scope.currentOccurrences.length = 0;
     $scope.currentOccurrences = [];
   };
@@ -271,9 +291,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void
    */
   $scope.saveRoute = function($event) {
-    $scope.currentOccurrences.length = 0;
-    $scope.currentOccurrences = [];
     $scope.saveToPersistence();
+    alert("Salvou a rota");
   },
 
   /**
@@ -281,13 +300,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @param Object occurrence
    */
   $scope.addOccurrence = function(occurrence) {
-    for (var i = 0; i < $scope.routes.length; i++) {
-      if($scope.routes[i].id == $scope.currentRoute) {
-        $scope.routes[i].occurrences.push(occurrence);
-        $scope.currentOccurrences.push(occurrence);
-        return true;
-      }
-    };
+    var route = $scope.getCurrentRoute();
+    if(route) {
+      route.occurrences.push(occurrence);
+      $scope.currentOccurrences.push(occurrence);
+      return true;
+    }
     return false;
   },
 
@@ -297,7 +315,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.getCurrentRoute = function() {
     for (var i = 0; i < $scope.routes.length; i++) {
-      if($scope.routes[i].route_id == $scope.currentRoute) {
+      if($scope.routes[i].id == $scope.currentRoute) {
         return $scope.routes[i];
       }
     };
@@ -377,6 +395,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
         $scope.renderRoute($scope.routes[i]);
+        alert("opening" + id);
         return true;
       }
     };
