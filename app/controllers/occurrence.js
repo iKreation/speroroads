@@ -259,6 +259,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       } else {
         alert('You need to select or create a new route to add occurrences.');
       }
+    } else {
+      alert("Tem que ter a rota iniciada para registar ocorrências.");
     }
   };
 
