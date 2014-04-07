@@ -265,7 +265,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         $scope.clearLayers();
 
         var pos = [position.coords.latitude, position.coords.longitude];
-        alert(position.coords.latitude);
         /* create layer to easily remove marker */
         $scope.currentMarker = L.marker(pos).addTo(map);
 
@@ -457,6 +456,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @param  int id route ID
    */
   $scope.openRoute = function(id) {
+    // only allow to change the route if there is no gps tracking active
+    if($scope.currentRouteWatcher) {
+      alert("Está a gravar uma rota, por favor termine a gravação para consultar outra");
+      return false;
+    }
+
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
         $scope.clearLayers();
