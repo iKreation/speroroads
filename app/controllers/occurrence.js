@@ -46,7 +46,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     '21' : {'name' : 'Fendilhamento - Tipo 1'},
     '22' : {'name' : 'Fendilhamento - Tipo 2'},
     '23' : {'name' : 'Fendilhamento - Tipo 3'},
-    '31' : {'name' : 'Peladas etc - Tipo 1'},
+    '31' : {'name' : 'Peladas etc - Tipo 1', 'watching' : false, 'points': [], 'watch_id': null},
     '32' : {'name' : 'Peladas etc - Tipo 2'},
     '33' : {'name' : 'Peladas etc - Tipo 3'},
     '41' : {'name' : 'Covas - Tipo 1'},
@@ -84,6 +84,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
+   * trackingIsActive the name tells it, just for readability 
+   * @return Boolean 
+   */
+  $scope.trackingIsActive = function() {
+    return $scope.currentRouteWatcher ? true : false ;
+  };
+
+  /**
    * triggerStartRoute defines if the state of the button and its action, 
    *                   tells if we're starting or stopping the gps watcher 
    *                   to the route
@@ -91,7 +99,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.triggerStartRoute = function($event) {
     var button = angular.element($event.target);
-    if ($scope.currentRouteWatcher) {
+    if ($scope.trackingIsActive()) {
       alert("Terminou a rota");
       // if it's watching something, stops
       button.removeClass('topcoat-button--large--cta');
@@ -120,7 +128,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     // gets the current selected route
     var route = $scope.getCurrentRoute();
     
-    if(!$scope.currentRouteWatcher) {
+    if(!$scope.trackingIsActive()) {
       // starts the watcher 
       alert("nova rota a gravar");
       var options = { timeout: 30000, enableHighAccuracy: true };
@@ -234,21 +242,23 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void changes the state of the app
    */
   $scope.triggerPathOcc = function($event) {
-    if ($scope.currentRoute) {
-      var id = $event.target.attributes.rel.value;
-      var button = angular.element($event.target);
-      // if it's watching something, stops
-      if($scope.instances[id].watching) {
-        button.removeClass('topcoat-button--large--cta');
-        button.addClass('topcoat-button--large');
-        $scope.stopsAndSavePathOccurrence(id);
+    if($scope.trackingIsActive()) {  
+      if ($scope.currentRoute) {
+        var id = $event.target.attributes.rel.value;
+        var button = angular.element($event.target);
+        // if it's watching something, stops
+        if($scope.instances[id].watching) {
+          button.removeClass('topcoat-button--large--cta');
+          button.addClass('topcoat-button--large');
+          $scope.stopsAndSavePathOccurrence(id);
+        } else {
+          button.removeClass('topcoat-button--large');
+          button.addClass('topcoat-button--large--cta');
+          $scope.startPathOccurrence(id);
+        }
       } else {
-        button.removeClass('topcoat-button--large');
-        button.addClass('topcoat-button--large--cta');
-        $scope.startPathOccurrence(id);
+        alert('You need to select or create a new route to add occurrences.');
       }
-    } else {
-      alert('You need to select or create a new route to add occurrences.');
     }
   };
 
@@ -258,36 +268,40 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void change the state of the app
    */
   $scope.saveSingleOccurrence = function($event) {
-    var id = $event.target.attributes.rel.value;
-    if ($scope.currentRoute) {
-      navigator.geolocation.getCurrentPosition(function(position) {  
-        // clear markers if they exist
-        $scope.clearLayers();
+    if($scope.trackingIsActive()) {
+      var id = $event.target.attributes.rel.value;
+      if ($scope.currentRoute) {
+        navigator.geolocation.getCurrentPosition(function(position) {  
+          // clear markers if they exist
+          $scope.clearLayers();
 
-        var pos = [position.coords.latitude, position.coords.longitude];
-        /* create layer to easily remove marker */
-        $scope.currentMarker = L.marker(pos).addTo(map);
+          var pos = [position.coords.latitude, position.coords.longitude];
+          /* create layer to easily remove marker */
+          $scope.currentMarker = L.marker(pos).addTo(map);
 
-        //$scope.occ.push(occurrence);
-        $scope.addOccurrence({
-          id : new Date().getTime(),
-          instance_id : id,
-          position : position,
-          path : null,
-          name: $scope.instances[id].name,
-          createddate : new Date(),
-          type: 'single',
+          //$scope.occ.push(occurrence);
+          $scope.addOccurrence({
+            id : new Date().getTime(),
+            instance_id : id,
+            position : position,
+            path : null,
+            name: $scope.instances[id].name,
+            createddate : new Date(),
+            type: 'single',
+          });
+
+          /* refresh */ 
+          $scope.$apply();
+          steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
+        }, 
+        function(error) {
+          alert("Erro a adicionar ocorrencia");
         });
-
-        /* refresh */ 
-        $scope.$apply();
-        steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
-      }, 
-      function(error) {
-        alert("Erro a adicionar ocorrencia");
-      });
+      } else {
+        alert("You need to select or create a new route to add occurrences.");
+      }
     } else {
-      alert("You need to select or create a new route to add occurrences.");
+      alert("Tem que ter a rota iniciada para registar ocorrências.");
     }
   };
 
@@ -316,8 +330,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.currentRoute = route.id;
     // needs to loose the reference, that's why we clone the array with slice
     $scope.currentOccurrences = route.occurrences.slice(0);
-    alert(route.subRoutes.length);
-
     var path = $scope.buildRouteFromSubRoutes(route);
     if(path.length > 0) {
       $scope.currentPolyline = L.polyline(path, {color: 'blue'}).addTo(map);
@@ -457,7 +469,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.openRoute = function(id) {
     // only allow to change the route if there is no gps tracking active
-    if($scope.currentRouteWatcher) {
+    if($scope.trackingIsActive()) {
       alert("Está a gravar uma rota, por favor termine a gravação para consultar outra");
       return false;
     }
