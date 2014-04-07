@@ -14,7 +14,7 @@
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
             <li class="topcoat-list__item" hm-tap="newRoute($event)" style="text-align:center">++ New Route ++</li>
-            <li class="topcoat-list__item" hm-tap="open(route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
+            <li class="topcoat-list__item" hm-tap="openRoute(route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
             {{ route.name }}
             <button hm-tap='delete(route.id)' style="float:right">Eliminar</button>
             </li>
@@ -124,8 +124,8 @@
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="51">R1</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="52">R2</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="53">R3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerStartRoute($event)">IN</button>
             <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="saveRoute($event)">GR</button>
-            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="startRoute($event)">IN</button>
             <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="showRouteSettings = true">AL</button>
             <br>
           </form>

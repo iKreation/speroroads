@@ -82,23 +82,62 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
+   * triggerStartRoute defines if the state of the button and its action, 
+   *                   tells if we're starting or stopping the gps watcher 
+   *                   to the route
+   * @param  Object $event
+   */
+  $scope.triggerStartRoute = function($event) {
+    var button = angular.element($event.target);
+    if ($scope.currentRouteWatcher) {
+      alert("Terminou a rota");
+      // if it's watching something, stops
+      button.removeClass('topcoat-button--large--cta');
+      button.addClass('topcoat-button--large');
+      $scope.stopRoute();
+    } else {
+      button.removeClass('topcoat-button--large');
+      button.addClass('topcoat-button--large--cta');
+      $scope.startRoute();
+    }
+  };
+
+  /**
+   * stopRoute clear the watchers and reset the state
+   */
+  $scope.stopRoute = function() {
+    navigator.geolocation.clearWatch($scope.currentRouteWatcher);
+    $scope.currentRouteWatcher = null;
+  };
+
+  /**
    * startRoute starts a new route enabling the main path
    * @param  Object event
    */
   $scope.startRoute = function($event) {
     // gets the current selected route
-    var currentRoute = $scope.getCurrentRoute();
-    // starts the watcher 
-    var options = { timeout: 30000, enableHighAccuracy: true };
+    $scope.currentRoute = $scope.getCurrentRoute();
+    
+    if(!$scope.currentRouteWatcher) {
+      // starts the watcher 
+      alert("nova rota a gravar");
+      var options = { timeout: 30000, enableHighAccuracy: true };
+      
+      // when starting a route, first sub route is the next element of the array
+      var lastIndex = $scope.currentRoute.subRoutes.length;
+      $scope.currentRoute.subRoutes[lastIndex] = [];
 
-    $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
-      function(position) {
-        $scope.instances[id].points.push(position);
-      }, 
-      function(error) {
-        alert(error);
-      }, 
-    options);
+      $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
+        function(position) {
+          $scope.currentRoute.subRoutes[lastIndex].push(position);
+        }, 
+        function(error) {
+          alert("erro a gravar a rota");
+        }, 
+      options);
+    } else {
+      alert("Erro - Tem uma rota ativa");
+    }
   };
 
   /**
@@ -217,7 +256,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.saveSingleOccurrence = function($event) {
     var id = $event.target.attributes.rel.value;
-    if ($scope.currentRoute != false) {
+    if ($scope.currentRoute) {
       navigator.geolocation.getCurrentPosition(function(position) {  
         // clear markers if they exist
         $scope.clearLayers();
@@ -242,25 +281,45 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
       }, 
       function(error) {
-        $scope.addOccurrence({
-          id : new Date().getTime(),
-          instance_id : id,
-          position : [31,-8],
-          path : null,
-          name: $scope.instances[id].name,
-          createddate : new Date(),
-          type: 'single',
-        });
+        alert("Erro a adicionar ocorrencia");
       });
     } else {
       alert("You need to select or create a new route to add occurrences.");
     }
   };
 
+  /**
+   * buildRouteFromSubRoutes this function gets all sub routes and join all arrays in one
+   * @param  Object route
+   * @return Array
+   */
+  $scope.buildRouteFromSubRoutes = function(route) {
+    var BuiltArray = [];
+    for(var p in route.subRoutes) {
+      for(var r in route.subRoutes[p]) {
+        BuiltArray.push([route.subRoutes[p][r].coords.latitude, 
+                         route.subRoutes[p][r].coords.longitude]);
+      }
+    }
+    return BuiltArray;
+  };
+
+  /**
+   * renderRoute update the view and map with the selected route info
+   * @param  Object route
+   */
   $scope.renderRoute = function(route) {
     $scope.currentRoute = route.id;
     // needs to loose the reference, that's why we clone the array with slice
     $scope.currentOccurrences = route.occurrences.slice(0);
+    alert(route.subRoutes.length);
+
+    var path = $scope.buildRouteFromSubRoutes(route);
+    if(path.length > 0) {
+      $scope.currentPolyline = L.polyline(path, {color: 'blue'}).addTo(map);
+      // zoom the map to the polyline
+      map.fitBounds($scope.currentPolyline.getBounds());
+    }
   },
 
   /**
@@ -391,7 +450,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * open Route
    * @param  int id route ID
    */
-  $scope.open = function(id) {
+  $scope.openRoute = function(id) {
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
         $scope.renderRoute($scope.routes[i]);
