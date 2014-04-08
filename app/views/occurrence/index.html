@@ -33,66 +33,40 @@
     <div class="col-md-9">
       <div class="row" id="route-settings" style="">
         <div class="col-md-12">
+
           <div class="col-md-4 no-padding">
             <h3>Pavimento</h3>
-            <select class="topcoat-select">
-              <option value="1" ng-selected="1 == 3">Flexível</option>
-              <option value="2" ng-selected="2 == 3">Rígido</option>
-              <option value="3" ng-selected="3 == 3">Semirrígido</option>
-              <option value="4" ng-selected="4 == 3">Blocos de betão</option>
-              <option value="5" ng-selected="5 == 3">Paralelepípedos de rocha natural</option>
-              <option value="6" ng-selected="6 == 3">Outro</option>
+            <select ng-model="settings_pav" ng-options="s.id as s.name for s in settingsPavimento" class="topcoat-select">
+
             </select>
 
             <h3>Bermas Pavimentadas</h3>
-            <select class="topcoat-select">
-              <option value="1" ng-selected="1 == 3">Sim</option>
-              <option value="0" ng-selected="2 == 3">Não</option>
+            <select ng-model="settings_bermas" ng-options="s.id as s.name for s in settingsBermas" class="topcoat-select">
             </select>
           </div>
 
           <div class="col-md-4 no-padding">
             <h3>Largura da berma</h3>
-            <select class="topcoat-select">
-              <option value="0">1</option>
-              <option value="1">2</option>
+            <select ng-model="settings_largura_berma" ng-options="s.id as s.name for s in settingsLarguraDaBerma" class="topcoat-select">
+
             </select>
           
             <h3>Número de vias</h3>
-            <select class="topcoat-select">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
+            <select ng-model="settings_nrvias" ng-options="s.id as s.name for s in settingsNrVias" class="topcoat-select">
+
             </select>
           </div>
         
           <div class="col-md-4 no-padding">
             <h3>Largura total pavimento</h3>
-            <select class="topcoat-select" style="margin-bottom:10px">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
+            <select ng-model="settings_largura_pavimento" ng-model="settings_largura_pavimento" ng-options="s.id as s.name for s in settingsLarguraTotalPavimento" class="topcoat-select" style="margin-bottom:10px">
+
             </select>
             <br />
-            <button class="topcoat-button speroroads-bottom" hm-tap="">Alterar</button>
-            <button class="topcoat-button speroroads-bottom" htm-tap="">Esconder</button>
-
+            <button class="topcoat-button speroroads-bottom" hm-tap="changeRoadSettings()">Alterar</button>
+            <button class="topcoat-button speroroads-bottom" hm-tap="closeRoadSettings()">Esconder</button>
           </div>
         </div>
-
-
       </div>
 
       <div class="row">

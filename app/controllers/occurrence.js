@@ -29,13 +29,77 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentMarker = null;
   $scope.currentPolyline = null;
 
-  // type of 'pavimentos' for route details
-  $scope.pavimentos = [{'id': '1', 'name' : 'flexivel'},
-                       {'id': '2', 'name' : 'rigido'},
-                       {'id': '3', 'name' : 'semirrigido'},
-                       {'id': '4', 'name' : 'blocos_de_betao'},
-                       {'id': '5', 'name' : 'paralelepidos_de_rocha_natural'},
-                       {'id': '6', 'name' : 'outro'}];
+  // form values
+  $scope.settingsPavimento = [
+    {id:'flex',name:'Flexível'},
+    {id:'rigido',name:'Rígido'},
+    {id:'semirigido',name:'Semi-rigido'},
+    {id:'blocosbetao',name:'Blocos de betão'},
+    {id:'paralelepipedos',name:'Paralelepípedos de rocha natural'},
+    {id:'outro',name:'Outro'}
+  ];
+
+  $scope.settingsBermas = [
+    {id:'True',name:'Sim'},
+    {id:'False',name:'Não'}
+  ];
+
+  $scope.settingsLarguraDaBerma = [
+    {id:'0',name:'0'},
+    {id:'1',name:'1'},
+    {id:'2',name:'2'},
+    {id:'3',name:'3'},
+    {id:'4',name:'4'},
+    {id:'5',name:'5'},
+    {id:'6',name:'6'},
+    {id:'7',name:'7'},
+    {id:'8',name:'8'},
+    {id:'9',name:'9'},
+    {id:'10',name:'10'},
+    {id:'11',name:'11'},
+    {id:'12',name:'12'},
+    {id:'13',name:'13'},
+    {id:'14',name:'14'},
+    {id:'15',name:'15'}
+  ];
+
+  $scope.settingsNrVias = [
+    {id:'0',name:'0'},
+    {id:'1',name:'1'},
+    {id:'2',name:'2'},
+    {id:'3',name:'3'},
+    {id:'4',name:'4'},
+    {id:'5',name:'5'},
+    {id:'6',name:'6'},
+    {id:'7',name:'7'},
+    {id:'8',name:'8'},
+    {id:'9',name:'9'},
+    {id:'10',name:'10'},
+    {id:'11',name:'11'},
+    {id:'12',name:'12'},
+    {id:'13',name:'13'},
+    {id:'14',name:'14'},
+    {id:'15',name:'15'}  
+  ];
+
+  $scope.settingsLarguraTotalPavimento = [
+    {id:'0',name:'0'},
+    {id:'1',name:'1'},
+    {id:'2',name:'2'},
+    {id:'3',name:'3'},
+    {id:'4',name:'4'},
+    {id:'5',name:'5'},
+    {id:'6',name:'6'},
+    {id:'7',name:'7'},
+    {id:'8',name:'8'},
+    {id:'9',name:'9'},
+    {id:'10',name:'10'},
+    {id:'11',name:'11'},
+    {id:'12',name:'12'},
+    {id:'13',name:'13'},
+    {id:'14',name:'14'},
+    {id:'15',name:'15'}
+  ];
   
   // type of occurrences, check with backend
   $scope.instances = {
@@ -160,6 +224,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     var commanderDiv = angular.element('#commander');
     commanderDiv.hide();
     roadSettingsDiv.show();
+  };
+
+  $scope.changeRoadSettings = function($event) {
+    alert($scope.settings_pav);
+    alert($scope.settings_bermas);
+    alert($scope.settings_largura_berma);
+    alert($scope.settings_nrvias);
+    alert($scope.settings_largura_pavimento);
   };
 
   /**
