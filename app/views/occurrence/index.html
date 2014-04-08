@@ -25,44 +25,76 @@
       
     </div>
   </div>
+
   <div class="row" style="margin-right:0px;">
     <div class="col-md-3">
-      <!--
-      <div class="row" id="routeoptions">
-        <div class="col-md-8" style="margin-left:15px;">
-            <strong>Pavimento</strong><br />
-              <select class="topcoat-select">
-                <option value="1" ng-selected="1 == 3">Flexível</option>
-                <option value="2" ng-selected="2 == 3">Rígido</option>
-                <option value="3" ng-selected="3 == 3">Semirrígido</option>
-                <option value="4" ng-selected="4 == 3">Blocos de betão</option>
-                <option value="5" ng-selected="5 == 3">Paralelepípedos de rocha natural</option>
-                <option value="6" ng-selected="6 == 3">Outro</option>
-              </select>
-            
-            <br />
-            <label class="topcoat-checkbox">
-              <input type="checkbox">
-              <div class="topcoat-checkbox__checkmark"></div>
-              Bermas Pavi.
-            </label>
-            
-            <br />
-            <strong>Largura da berma</strong><br />
-            <input type='text' class='topcoat-text-input' placeholder='Largura da berma' value='{{currentOccurrence.options.bermas_pavimentadas}}'>
-
-            <br />
-            <strong>Número de vias</strong><br />
-            <input type='text' class='topcoat-text-input' placeholder='Número de vias' value='{{currentOccurrence.options.n_vias}}'>
-
-            <br />
-            <strong>Largura total pav.</strong><br />
-            <input type='text' class='topcoat-text-input' placeholder='Largura total pav.' value='{{currentOccurrence.options.largura_total_pavimentada}}'>
-        </div>
-      </div>
-      -->
+    
     </div>
     <div class="col-md-9">
+      <div class="row" id="route-settings" style="">
+        <div class="col-md-12">
+          <div class="col-md-4 no-padding">
+            <h3>Pavimento</h3>
+            <select class="topcoat-select">
+              <option value="1" ng-selected="1 == 3">Flexível</option>
+              <option value="2" ng-selected="2 == 3">Rígido</option>
+              <option value="3" ng-selected="3 == 3">Semirrígido</option>
+              <option value="4" ng-selected="4 == 3">Blocos de betão</option>
+              <option value="5" ng-selected="5 == 3">Paralelepípedos de rocha natural</option>
+              <option value="6" ng-selected="6 == 3">Outro</option>
+            </select>
+
+            <h3>Bermas Pavimentadas</h3>
+            <select class="topcoat-select">
+              <option value="1" ng-selected="1 == 3">Sim</option>
+              <option value="0" ng-selected="2 == 3">Não</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 no-padding">
+            <h3>Largura da berma</h3>
+            <select class="topcoat-select">
+              <option value="0">1</option>
+              <option value="1">2</option>
+            </select>
+          
+            <h3>Número de vias</h3>
+            <select class="topcoat-select">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+            </select>
+          </div>
+        
+          <div class="col-md-4 no-padding">
+            <h3>Largura total pavimento</h3>
+            <select class="topcoat-select" style="margin-bottom:10px">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+            </select>
+            <br />
+            <button class="topcoat-button speroroads-bottom" hm-tap="">Alterar</button>
+            <button class="topcoat-button speroroads-bottom" htm-tap="">Esconder</button>
+
+          </div>
+        </div>
+
+
+      </div>
+
       <div class="row">
         <div class="col-md-4 no-padding" style="padding-right:10px;">
           <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;">
@@ -74,37 +106,6 @@
               </li>
             </ul>
           </div>
-        </div>
-
-        <div class="col-md-8 no-padding" id="route-settings" ng-show="showRouteSettings">
-          <strong>Pavimento</strong><br />
-            <select class="topcoat-select">
-              <option value="1" ng-selected="1 == 3">Flexível</option>
-              <option value="2" ng-selected="2 == 3">Rígido</option>
-              <option value="3" ng-selected="3 == 3">Semirrígido</option>
-              <option value="4" ng-selected="4 == 3">Blocos de betão</option>
-              <option value="5" ng-selected="5 == 3">Paralelepípedos de rocha natural</option>
-              <option value="6" ng-selected="6 == 3">Outro</option>
-            </select>
-          
-          <br />
-          <label class="topcoat-checkbox">
-            <input type="checkbox">
-            <div class="topcoat-checkbox__checkmark"></div>
-            Bermas Pavi.
-          </label>
-          
-          <br />
-          <strong>Largura da berma</strong><br />
-          <input type='text' class='topcoat-text-input' placeholder='Largura da berma' value='{{currentOccurrence.options.bermas_pavimentadas}}'>
-
-          <br />
-          <strong>Número de vias</strong><br />
-          <input type='text' class='topcoat-text-input' placeholder='Número de vias' value='{{currentOccurrence.options.n_vias}}'>
-
-          <br />
-          <strong>Largura total pav.</strong><br />
-          <input type='text' class='topcoat-text-input' placeholder='Largura total pav.' value='{{currentOccurrence.options.largura_total_pavimentada}}'>
         </div>
 
         <div class="col-md-8 no-padding" id="commander">
@@ -126,7 +127,7 @@
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="53">R3</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerStartRoute($event)">IN</button>
             <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="saveRoute($event)">GR</button>
-            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="showRouteSettings = true">AL</button>
+            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="">AL</button>
             <br>
           </form>
         </div>

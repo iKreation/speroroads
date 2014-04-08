@@ -340,6 +340,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
+
   /**
    * newRoute creates add's a new route to the current state of the app
    * @return void 
