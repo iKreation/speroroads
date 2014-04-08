@@ -226,12 +226,18 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     roadSettingsDiv.show();
   };
 
+  /**
+   * changeRoadSettings update the settings value of Road
+   * @param  Object $event 
+   */
   $scope.changeRoadSettings = function($event) {
-    alert($scope.settings_pav);
-    alert($scope.settings_bermas);
-    alert($scope.settings_largura_berma);
-    alert($scope.settings_nrvias);
-    alert($scope.settings_largura_pavimento);
+    /* working
+    $scope.settings_pav;
+    $scope.settings_bermas;
+    $scope.settings_largura_berma;
+    $scope.settings_nrvias;
+    $scope.settings_largura_pavimento;
+    */
   };
 
   /**
