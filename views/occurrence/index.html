@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf8">
+  <title>Steroids App</title>
+
+  <link rel="stylesheet" href="/vendor/topcoat/css/topcoat-mobile-light.css" />
+  <link rel="stylesheet" href="/stylesheets/application.css" />
+  <link rel="stylesheet" href="/stylesheets/bootstrap.css" />
+  <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css" />
+  <link rel="stylesheet" href="/stylesheets/occurrence.css" />
+
+
+  <script src="http://localhost/cordova.js"></script>
+  <script src="/components/steroids-js/steroids.js"></script>
+  
+  <script src="/components/underscore/underscore-min.js"></script>
+
+  <script src="/javascripts/plugins/sqliteplugin.js"></script>
+
+  <script src="/vendor/persistencejs/persistence.js"></script>
+  <script src="/vendor/persistencejs/persistence.store.sql.js"></script>
+  <script src="/vendor/persistencejs/persistence.store.websql.js"></script>
+
+  <script src="/components/angular/angular.min.js"></script>
+
+  <script src="/vendor/hammerjs/hammer.min.js"></script>
+  <script src="/vendor/angular-hammer/angular-hammer.js"></script>
+
+  <script src="http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js"></script>
+
+  <script src="/models/occurrence.js"></script>
+
+  <script src="/controllers/occurrence.js"></script>
+</head>
+<body>
+
+
+  <style>
+  .speroroads-bottom { margin-bottom:5px;padding:25px;}
+  .list-evaluation { border-right:0px solid #333; padding-right:0px; min-height:100%;}
+  .no-padding {padding:0px;}
+  #map-container {min-height:400px; margin-bottom:10px;}
+  #commander {margin-right:0px;font-family:"Courier New", Courier, monospace;}
+</style>
+
+<div ng-controller="IndexCtrl" class="container-fluid no-padding">
+
+  <div class="row" style="margin-right:0px;">
+    <div class="col-md-3" style="padding-right:0px;">
+      <div class="topcoat-list__container list-evaluation" style="max-height:730px;">
+          <ul class="topcoat-list">
+            <!-- order is reversed created timestamp -->
+            <li class="topcoat-list__item" hm-tap="newRoute($event)" style="text-align:center">++ New Route ++</li>
+            <li class="topcoat-list__item" hm-tap="openRoute(route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
+            {{ route.name }}
+            <button hm-tap='delete(route.id)' style="float:right">Eliminar</button>
+            </li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-9" id="map-container">
+
+    </div>
+  </div>
+
+  <div class="row" style="margin-right:0px;">
+    <div class="col-md-3">
+
+    </div>
+    <div class="col-md-9">
+      <div class="row" id="route-settings" ng-show="route_settings_visibility">
+        <div class="col-md-12">
+
+          <div class="col-md-4 no-padding">
+            <h3>Pavimento</h3>
+            <select ng-model="settings_pav" ng-options="s.id as s.name for s in settingsPavimento" class="topcoat-select">
+
+            </select>
+
+            <h3>Bermas Pavimentadas</h3>
+            <select ng-model="settings_bermas" ng-options="s.id as s.name for s in settingsBermas" class="topcoat-select">
+            </select>
+          </div>
+
+          <div class="col-md-4 no-padding">
+            <h3>Largura da berma</h3>
+            <select ng-model="settings_largura_berma" ng-options="s.id as s.name for s in settingsLarguraDaBerma" class="topcoat-select">
+
+            </select>
+
+            <h3>Número de vias</h3>
+            <select ng-model="settings_nrvias" ng-options="s.id as s.name for s in settingsNrVias" class="topcoat-select">
+
+            </select>
+          </div>
+
+          <div class="col-md-4 no-padding">
+            <h3>Largura total pavimento</h3>
+            <select ng-model="settings_largura_pavimento" ng-model="settings_largura_pavimento" ng-options="s.id as s.name for s in settingsLarguraTotalPavimento" class="topcoat-select" style="margin-bottom:10px">
+
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row" ng-show="route_settings_visibility" style="margin-top:10px;">
+        <div class="col-md-12" style="padding:10px;">
+          <button class="topcoat-button speroroads-bottom" hm-tap="changeRoadSettings()">Alterar</button>
+          <button class="topcoat-button speroroads-bottom" hm-tap="closeRoadSettings()">Cancelar</button>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-4 no-padding" style="padding-right:10px;">
+          <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;" ng-show="!route_settings_visibility">
+            <ul class="topcoat-list">
+              <!-- order is reversed created timestamp -->
+              <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
+              <li class="topcoat-list__item" ng-repeat="occur in currentOccurrences" hm-tap='openOccurrence(occur.id)'>
+              {{ occur.name }}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="col-md-8 no-padding" id="commander" ng-show="!route_settings_visibility">
+          <form class="simple-form">
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="11">R1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="12">R2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="13">R3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="21">F1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="22">F2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="23">F3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="31">P1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="32">P2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="33">P3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="41">C1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="42">C2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="43">C3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="51">R1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="52">R2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="53">R3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerStartRoute($event)">IN</button>
+            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="saveRoute($event)">GR</button>
+            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="triggerRoadSettings($event)">AL</button>
+            <br>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> <!-- first container -->
+
+
+</body>
+</html>
