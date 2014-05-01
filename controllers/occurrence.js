@@ -168,6 +168,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     });
     return fileMoved = function(file) {
       alert("Foto associada a patologia.");
+
       console.log(file.name);
     };
   };
