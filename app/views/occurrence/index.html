@@ -1,5 +1,5 @@
 <style>
-  .speroroads-bottom { margin-bottom:5px;padding:25px;} 
+  .speroroads-bottom { margin-bottom:5px;padding:25px;}
   .list-evaluation { border-right:0px solid #333; padding-right:0px; min-height:100%;}
   .no-padding {padding:0px;}
   #map-container {min-height:400px; margin-bottom:10px;}
@@ -22,82 +22,59 @@
       </div>
     </div>
     <div class="col-md-9" id="map-container">
-      
+
     </div>
   </div>
 
   <div class="row" style="margin-right:0px;">
     <div class="col-md-3">
-    
+
     </div>
     <div class="col-md-9">
-      <div class="row" id="route-settings" style="">
+      <div class="row" id="route-settings" ng-show="route_settings_visibility">
         <div class="col-md-12">
+
           <div class="col-md-4 no-padding">
             <h3>Pavimento</h3>
-            <select class="topcoat-select">
-              <option value="1" ng-selected="1 == 3">Flexível</option>
-              <option value="2" ng-selected="2 == 3">Rígido</option>
-              <option value="3" ng-selected="3 == 3">Semirrígido</option>
-              <option value="4" ng-selected="4 == 3">Blocos de betão</option>
-              <option value="5" ng-selected="5 == 3">Paralelepípedos de rocha natural</option>
-              <option value="6" ng-selected="6 == 3">Outro</option>
+            <select ng-model="settings_pav" ng-options="s.id as s.name for s in settingsPavimento" class="topcoat-select">
+
             </select>
 
             <h3>Bermas Pavimentadas</h3>
-            <select class="topcoat-select">
-              <option value="1" ng-selected="1 == 3">Sim</option>
-              <option value="0" ng-selected="2 == 3">Não</option>
+            <select ng-model="settings_bermas" ng-options="s.id as s.name for s in settingsBermas" class="topcoat-select">
             </select>
           </div>
 
           <div class="col-md-4 no-padding">
             <h3>Largura da berma</h3>
-            <select class="topcoat-select">
-              <option value="0">1</option>
-              <option value="1">2</option>
+            <select ng-model="settings_largura_berma" ng-options="s.id as s.name for s in settingsLarguraDaBerma" class="topcoat-select">
+
             </select>
-          
+
             <h3>Número de vias</h3>
-            <select class="topcoat-select">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
+            <select ng-model="settings_nrvias" ng-options="s.id as s.name for s in settingsNrVias" class="topcoat-select">
+
             </select>
           </div>
-        
+
           <div class="col-md-4 no-padding">
             <h3>Largura total pavimento</h3>
-            <select class="topcoat-select" style="margin-bottom:10px">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-            </select>
-            <br />
-            <button class="topcoat-button speroroads-bottom" hm-tap="">Alterar</button>
-            <button class="topcoat-button speroroads-bottom" htm-tap="">Esconder</button>
+            <select ng-model="settings_largura_pavimento" ng-model="settings_largura_pavimento" ng-options="s.id as s.name for s in settingsLarguraTotalPavimento" class="topcoat-select" style="margin-bottom:10px">
 
+            </select>
           </div>
         </div>
-
-
+      </div>
+      <div class="row" ng-show="route_settings_visibility" style="margin-top:10px;">
+        <div class="col-md-12" style="padding:10px;">
+          <button class="topcoat-button speroroads-bottom" hm-tap="changeRoadSettings()">Alterar</button>
+          <button class="topcoat-button speroroads-bottom" hm-tap="closeRoadSettings()">Cancelar</button>
+        </div>
       </div>
 
       <div class="row">
         <div class="col-md-4 no-padding" style="padding-right:10px;">
-          <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;">
+          <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;" ng-show="!route_settings_visibility">
             <ul class="topcoat-list">
               <!-- order is reversed created timestamp -->
               <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
@@ -108,7 +85,7 @@
           </div>
         </div>
 
-        <div class="col-md-8 no-padding" id="commander">
+        <div class="col-md-8 no-padding" id="commander" ng-show="!route_settings_visibility">
           <form class="simple-form">
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="11">R1</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="12">R2</button>
@@ -127,7 +104,7 @@
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="53">R3</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerStartRoute($event)">IN</button>
             <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="saveRoute($event)">GR</button>
-            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="">AL</button>
+            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="triggerRoadSettings($event)">AL</button>
             <br>
           </form>
         </div>
