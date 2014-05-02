@@ -1,4 +1,4 @@
-/* 
+/*
  * Application description
  * TODO
  */
@@ -7,12 +7,12 @@ document.addEventListener("deviceready", function() {
   angular.bootstrap(document, ['occurrenceApp']);
 });
 
-var occurrenceApp = angular.module('occurrenceApp', 
+var occurrenceApp = angular.module('occurrenceApp',
                                   ['OccurrenceModel', 'hmTouchevents']);
 
 occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Will rotate to every direction
-  steroids.view.setAllowedRotations([0,180,-90,90]); 
+  steroids.view.setAllowedRotations([0,180,-90,90]);
 
   // Route states
   $scope.currentRoute = null;
@@ -80,6 +80,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     {id:'13',name:'13'},
     {id:'14',name:'14'},
     {id:'15',name:'15'}  
+
   ];
 
   $scope.settingsLarguraTotalPavimento = [
@@ -100,11 +101,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     {id:'14',name:'14'},
     {id:'15',name:'15'}
   ];
-  
+
   // type of occurrences, check with backend
   $scope.instances = {
     '11' : {'name' : 'Rodeiras - Tipo 1'},
-    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false, 
+    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false,
                                           'points': [], 'watch_id': null},
     '13' : {'name' : 'Rodeiras - Tipo 3'},
     '21' : {'name' : 'Fendilhamento - Tipo 1'},
@@ -120,7 +121,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     '52' : {'name' : 'Reparações - Tipo 2'},
     '53' : {'name' : 'Reparações - Tipo 3'}
   };
-  
+
   // instantiates the map
   var map = L.map('map-container').setView([40.20641, -8.409745], 13);
 
@@ -129,6 +130,48 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       attribution: 'Yeah right OSM.',
       maxZoom: 18
   }).addTo(map);
+
+
+  $scope.takePicture = function() {
+    console.log(" Take picture.");
+    navigator.camera.getPicture($scope.imageUriReceived, function(message) {
+        setTimeout(function() {
+            alert(message);
+        }, 100);
+    }, {
+        quality: 25,
+        destinationType: navigator.camera.DestinationType.FILE_URI,
+        sourceType: navigator.camera.PictureSourceType.CAMERA,
+        encodingType: navigator.camera.EncodingType.JPEG,
+        targetWidth:800,
+        correctOrientation:true
+    });
+  };
+
+  $scope.imageUriReceived = function(imageURI) {
+      return window.resolveLocalFileSystemURI(imageURI, $scope.gotFileObject, $scope.fileError);
+  };
+
+  $scope.fileError = function(error) {
+    navigator.notification.alert("Cordova error code: " + error.code, null, "File system error!");
+  };
+
+  $scope.gotFileObject = function(file) {
+    var fileMoved;
+    steroids.on("ready", function() {
+      var fileName, targetDirURI;
+      targetDirURI = "file://" + steroids.app.absoluteUserFilesPath;
+
+      fileName = String(new Date().getTime()) + ".jpeg";
+      return window.resolveLocalFileSystemURI(targetDirURI, function(directory) {
+        return file.moveTo(directory, fileName, fileMoved, $scope.fileError);
+      }, $scope.fileError);
+    });
+    return fileMoved = function(file) {
+      alert("Foto associada a patologia.");
+      console.log(file.name);
+    };
+  };
 
   /**
    * clearLayers function to clear the map
@@ -148,31 +191,35 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
-   * trackingIsActive the name tells it, just for readability 
-   * @return Boolean 
+   * trackingIsActive the name tells it, just for readability
+   * @return Boolean
    */
   $scope.trackingIsActive = function() {
     return $scope.currentRouteWatcher ? true : false ;
   };
 
   /**
-   * triggerStartRoute defines if the state of the button and its action, 
-   *                   tells if we're starting or stopping the gps watcher 
+   * triggerStartRoute defines if the state of the button and its action,
+   *                   tells if we're starting or stopping the gps watcher
    *                   to the route
    * @param  Object $event
    */
   $scope.triggerStartRoute = function($event) {
     var button = angular.element($event.target);
-    if ($scope.trackingIsActive()) {
-      alert("Terminou a rota");
-      // if it's watching something, stops
-      button.removeClass('topcoat-button--large--cta');
-      button.addClass('topcoat-button--large');
-      $scope.stopRoute();
+    if($scope.currentRoute) {
+      if ($scope.trackingIsActive()) {
+        alert("Terminou a rota");
+        // if it's watching something, stops
+        button.removeClass('topcoat-button--large--cta');
+        button.addClass('topcoat-button--large');
+        $scope.stopRoute();
+      } else {
+        button.removeClass('topcoat-button--large');
+        button.addClass('topcoat-button--large--cta');
+        $scope.startRoute();
+      }
     } else {
-      button.removeClass('topcoat-button--large');
-      button.addClass('topcoat-button--large--cta');
-      $scope.startRoute();
+      alert("Crie ou seleccione uma nova rota para iniciar o levantamento.");
     }
   };
 
@@ -191,12 +238,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.startRoute = function($event) {
     // gets the current selected route
     var route = $scope.getCurrentRoute();
-    
+
     if(!$scope.trackingIsActive()) {
-      // starts the watcher 
+      // starts the watcher
       alert("nova rota a gravar");
       var options = { timeout: 30000, enableHighAccuracy: true };
-      
+
       // when starting a route, first sub route is the next element of the array
       var lastIndex = route.subRoutes.length;
       route.subRoutes[lastIndex] = [];
@@ -204,26 +251,57 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
         function(position) {
           route.subRoutes[lastIndex].push(position);
-        }, 
+        },
         function(error) {
           alert("erro a gravar a rota");
-        }, 
+        },
       options);
     } else {
       alert("Erro - Tem uma rota ativa");
     }
   };
 
+  $scope.syncWithServer = function($event) {
+
+    var route = $scope.getCurrentRoute();
+
+    $http({
+        method  : 'POST',
+        url     : '',
+        data    : route,
+        headers : { 'Content-Type': 'application/json' }
+    })
+
+
+  };
+
   /**
    * triggerRoadSettings shows the form for road settings changes
-   * @param  Object $event 
+   * @param  Object $event
    */
   $scope.triggerRoadSettings = function($event) {
-    document.getElementById('route-settings').style.visibility = 'hidden';
-    var roadSettingsDiv = angular.element('#route-settings');
-    var commanderDiv = angular.element('#commander');
-    commanderDiv.hide();
-    roadSettingsDiv.show();
+    $scope.route_settings_visibility = true;
+  };
+
+  $scope.closeRoadSettings = function($event) {
+    // set the previous values
+    $scope.route_settings_visibility = false;
+  };
+
+  /**
+   * changeRoadSettings update the settings value of Road
+   * @param  Object $event
+   */
+  $scope.changeRoadSettings = function($event) {
+    /* working, this really update things
+    $scope.settings_pav;
+    $scope.settings_bermas;
+    $scope.settings_largura_berma;
+    $scope.settings_nrvias;
+    $scope.settings_largura_pavimento;
+    */
+   alert('Características da via alteradas');
+   $scope.closeRoadSettings($event);
   };
 
   /**
@@ -249,7 +327,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.clearLayers();
     // just a flag to check wether we'r watching or not
     $scope.instances[id].watching = true;
-    // starts the watcher 
+    // starts the watcher
     var options = { timeout: 30000, enableHighAccuracy: true };
 
     $scope.instances[id].watch_id = navigator.geolocation.watchPosition(
@@ -258,18 +336,18 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         $scope.clearLayers();
         var pos = [position.coords.latitude, position.coords.longitude];
         $scope.currentMarker = L.marker(pos).addTo(map);
-        // for every location update add the point to the 
+        // for every location update add the point to the
         // updated state of the instance object
         $scope.instances[id].points.push(position);
-      }, 
+      },
       function(error) {
         alert(error);
-      }, 
+      },
     options);
   };
 
   /**
-   * stopsAndSavePathOccurrence stops the current watcher and save the path 
+   * stopsAndSavePathOccurrence stops the current watcher and save the path
    *                            occurrence
    * @param  int id is the type of instance referenced in $scope.instances
    */
@@ -280,12 +358,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     // stop watching
     navigator.geolocation.clearWatch($scope.instances[id].watch_id);
     $scope.instances[id].watch_id = null;
-    
-    // draw the line 
+
+    // draw the line
     var path = [];
     var pathObject = $scope.instances[id].points;
 
-    // get the points from current state of the instance 
+    // get the points from current state of the instance
     // creates the array and draws the polyline
     for(var p in pathObject) {
       path.push([pathObject[p].coords.latitude, pathObject[p].coords.longitude]);
@@ -301,14 +379,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       type: 'path'
     });
 
-    /* refresh */ 
+    /* refresh */
     $scope.$apply();
     $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
     // zoom the map to the polyline
     map.fitBounds($scope.currentPolyline.getBounds());
-    // clear points  
+    // clear points
     $scope.instances[id].points = [];
-    // stop watching 
+    // stop watching
     steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[id].name);
   };
 
@@ -320,7 +398,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void changes the state of the app
    */
   $scope.triggerPathOcc = function($event) {
-    if($scope.trackingIsActive()) {  
+    if($scope.trackingIsActive()) {
       if ($scope.currentRoute) {
         var id = $event.target.attributes.rel.value;
         var button = angular.element($event.target);
@@ -351,7 +429,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     if($scope.trackingIsActive()) {
       var id = $event.target.attributes.rel.value;
       if ($scope.currentRoute) {
-        navigator.geolocation.getCurrentPosition(function(position) {  
+        navigator.geolocation.getCurrentPosition(function(position) {
           // clear markers if they exist
           $scope.clearLayers();
 
@@ -370,10 +448,10 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
             type: 'single',
           });
 
-          /* refresh */ 
+          /* refresh */
           $scope.$apply();
           steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
-        }, 
+        },
         function(error) {
           alert("Erro a adicionar ocorrencia");
         });
@@ -386,7 +464,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   /**
-   * buildRouteFromSubRoutes this function gets all sub routes and join 
+   * buildRouteFromSubRoutes this function gets all sub routes and join
    *                         all arrays in one
    * @param  Object route
    * @return Array
@@ -395,7 +473,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     var BuiltArray = [];
     for(var p in route.subRoutes) {
       for(var r in route.subRoutes[p]) {
-        BuiltArray.push([route.subRoutes[p][r].coords.latitude, 
+        BuiltArray.push([route.subRoutes[p][r].coords.latitude,
                          route.subRoutes[p][r].coords.longitude]);
       }
     }
@@ -421,7 +499,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   /**
    * newRoute creates add's a new route to the current state of the app
-   * @return void 
+   * @return void
    */
   $scope.newRoute = function() {
     var dt = new Date();
@@ -443,7 +521,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   /**
    * saveRoute saves the current state of the app to localStorage, note: it save ALL routes
-   * @param Object $event 
+   * @param Object $event
    * @return void
    */
   $scope.saveRoute = function(obj) {
@@ -491,11 +569,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @param  int id the occurrence id
    */
   $scope.openOccurrence = function(id) {
-    
+
     $scope.clearLayers();
 
-    // find it 
-    
+    // find it
+
     for(var o in $scope.currentOccurrences) {
       if(parseInt($scope.currentOccurrences[o].id) == parseInt(id)) {
 
@@ -504,7 +582,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         // check the type
         if($scope.currentOccurrences[o].type == 'single') {
           pos = $scope.currentOccurrences[o].position;
-          $scope.currentMarker = L.marker([pos.coords.latitude, 
+          $scope.currentMarker = L.marker([pos.coords.latitude,
                                           pos.coords.longitude]).addTo(map);
           map.fitBounds([[pos.coords.latitude, pos.coords.longitude]]);
         } else {
@@ -519,7 +597,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
-  /* SAVE CURRENT STATE */ 
+  /* SAVE CURRENT STATE */
   $scope.saveToPersistence = function(id) {
     localStorage.setItem('routes', JSON.stringify($scope.routes));
   };
@@ -576,5 +654,40 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   // Set up the navigation bar
   steroids.view.navigationBar.show("Prototype");
+
+  var rightButton = new steroids.buttons.NavigationBarButton();
+  rightButton.title = "Foto";
+  rightButton.onTap = function() {
+    if($scope.currentOccurrence) {
+      $scope.takePicture();
+    } else {
+      alert("Por favor seleccione uma patologia primeiro");
+    }
+  };
+
+  var syncButton = new steroids.buttons.NavigationBarButton();
+  syncButton.title = "Sync";
+  syncButton.onTap = function() {
+
+    if($scope.getCurrentRoute() != false) {
+      $scope.syncWithServer();
+    } else {
+      alert("Por favor seleccione uma rota primeiro");
+    }
+  };
+
+  steroids.view.navigationBar.setButtons({
+    right: [rightButton,syncButton],
+
+    overrideBackButton: true
+  }, {
+    onSuccess: function() {
+      //
+    },
+    onFailure: function() {
+      alert("Failed to set buttons.");
+    }
+  });
+
 
 });
