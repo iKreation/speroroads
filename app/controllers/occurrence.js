@@ -278,15 +278,22 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @param  Object $event
    */
   $scope.changeRoadSettings = function($event) {
-    /* working, this really update things
+    /*working, this really update things*/
     $scope.settings_pav;
     $scope.settings_bermas;
     $scope.settings_largura_berma;
     $scope.settings_nrvias;
-    $scope.settings_largura_pavimento;
-    */
+    $scope.settings_largura_pavimento; 
+    
    alert('Características da via alteradas');
    $scope.closeRoadSettings($event);
+   $scope.startRoute();
+   var routeSettings = [scope.settings_pav,
+                        scope.settings_bermas,
+                        scope.settings_largura_berma,
+                        scope.settings_nrvias,
+                        scope.settings_largura_pavimento];
+   $scope.currentSubRoute['settings'] = routeSettings;
   };
 
   /**
@@ -647,6 +654,4 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       alert("Failed to set buttons.");
     }
   });
-
-
 });
