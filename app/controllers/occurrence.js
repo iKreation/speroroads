@@ -79,7 +79,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     {id:'12',name:'12'},
     {id:'13',name:'13'},
     {id:'14',name:'14'},
-    {id:'15',name:'15'}
+    {id:'15',name:'15'}  
+
   ];
 
   $scope.settingsLarguraTotalPavimento = [
@@ -260,6 +261,20 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
+  $scope.syncWithServer = function($event) {
+
+    var route = $scope.getCurrentRoute();
+
+    $http({
+        method  : 'POST',
+        url     : '',
+        data    : route,
+        headers : { 'Content-Type': 'application/json' }
+    })
+
+
+  };
+
   /**
    * triggerRoadSettings shows the form for road settings changes
    * @param  Object $event
@@ -294,6 +309,20 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
                         scope.settings_nrvias,
                         scope.settings_largura_pavimento];
    $scope.currentSubRoute['settings'] = routeSettings;
+  };
+
+  /**
+   * changeRoadSettings update the settings value of Road
+   * @param  Object $event 
+   */
+  $scope.changeRoadSettings = function($event) {
+    /* working
+    $scope.settings_pav;
+    $scope.settings_bermas;
+    $scope.settings_largura_berma;
+    $scope.settings_nrvias;
+    $scope.settings_largura_pavimento;
+    */
   };
 
   /**
@@ -643,8 +672,20 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
+  var syncButton = new steroids.buttons.NavigationBarButton();
+  syncButton.title = "Sync";
+  syncButton.onTap = function() {
+
+    if($scope.getCurrentRoute() != false) {
+      $scope.syncWithServer();
+    } else {
+      alert("Por favor seleccione uma rota primeiro");
+    }
+  };
+
   steroids.view.navigationBar.setButtons({
-    right: [rightButton],
+    right: [rightButton,syncButton],
+
     overrideBackButton: true
   }, {
     onSuccess: function() {
