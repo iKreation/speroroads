@@ -17,8 +17,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Route states
   $scope.currentRoute = null;
   $scope.currentRouteWatcher = null;
-  $scope.currentSubRoute = null;
+  $scope.currentSubRoute = {};
   $scope.currentOccurrence = null;
+  $scope.currentRouteSettings = null;
 
   // Data structures for the application
   // this structures define the current
@@ -205,6 +206,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @param  Object $event
    */
   $scope.triggerStartRoute = function($event) {
+
     var button = angular.element($event.target);
     if($scope.currentRoute) {
       if ($scope.trackingIsActive()) {
@@ -213,15 +215,42 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         button.removeClass('topcoat-button--large--cta');
         button.addClass('topcoat-button--large');
         $scope.stopRoute();
-      } else {
-        button.removeClass('topcoat-button--large');
-        button.addClass('topcoat-button--large--cta');
-        $scope.startRoute();
-      }
-    } else {
-      alert("Crie ou seleccione uma nova rota para iniciar o levantamento.");
+      } 
+
+      else {
+        var emptySetting=false;
+
+        for(var s in $scope.currentRouteSettings){
+
+          if (!$scope.currentRouteSettings[s]) {
+            emptySetting = true;
+            break;
+          }
+        }
+
+        if (!$scope.currentRouteSettings){
+          emptySetting = true;
+        }
+  
+
+        if(emptySetting==false){
+
+          button.removeClass('topcoat-button--large');
+          button.addClass('topcoat-button--large--cta');
+          $scope.startRoute();
+        }
+
+        else{
+          alert("Por favor defina todas as caracteristicas da via primeiro");
+        }
     }
-  };
+  } 
+
+  else {
+    alert("Crie ou seleccione uma nova rota para iniciar o levantamento.");
+  }
+
+};
 
   /**
    * stopRoute clear the watchers and reset the state
@@ -238,7 +267,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.startRoute = function($event) {
     // gets the current selected route
     var route = $scope.getCurrentRoute();
-
+    
     if(!$scope.trackingIsActive()) {
       // starts the watcher
       alert("nova rota a gravar");
@@ -247,19 +276,23 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       // when starting a route, first sub route is the next element of the array
       var lastIndex = route.subRoutes.length;
       route.subRoutes[lastIndex] = [];
-
+      route.subRoutes[lastIndex]['settings'] = $scope.currentRouteSettings;
       $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
         function(position) {
           route.subRoutes[lastIndex].push(position);
+          alert(route.subRoutes[lastIndex]['settings']);
         },
         function(error) {
           alert("erro a gravar a rota");
         },
       options);
-    } else {
+    } 
+
+    else {
       alert("Erro - Tem uma rota ativa");
     }
   };
+
 
   $scope.syncWithServer = function($event) {
 
@@ -294,36 +327,30 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.changeRoadSettings = function($event) {
     /*working, this really update things*/
+
+   alert('Características da via alteradas');
+
     $scope.settings_pav;
     $scope.settings_bermas;
     $scope.settings_largura_berma;
     $scope.settings_nrvias;
     $scope.settings_largura_pavimento; 
     
-   alert('Características da via alteradas');
+
+   var routeSettings = [$scope.settings_pav,
+                        $scope.settings_bermas,
+                        $scope.settings_largura_berma,
+                        $scope.settings_nrvias,
+                        $scope.settings_largura_pavimento];
+
+   $scope.currentRouteSettings = routeSettings;
    $scope.closeRoadSettings($event);
-   $scope.startRoute();
-   var routeSettings = [scope.settings_pav,
-                        scope.settings_bermas,
-                        scope.settings_largura_berma,
-                        scope.settings_nrvias,
-                        scope.settings_largura_pavimento];
-   $scope.currentSubRoute['settings'] = routeSettings;
   };
 
-  /**
-   * changeRoadSettings update the settings value of Road
-   * @param  Object $event 
-   */
-  $scope.changeRoadSettings = function($event) {
-    /* working
-    $scope.settings_pav;
-    $scope.settings_bermas;
-    $scope.settings_largura_berma;
-    $scope.settings_nrvias;
-    $scope.settings_largura_pavimento;
-    */
-  };
+
+
+
+
 
   /**
    * startPathOccurrence init GPS watcher and makes the relation to the instances
