@@ -17,8 +17,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Route states
   $scope.currentRoute = null;
   $scope.currentRouteWatcher = null;
-  $scope.currentSubRoute = {};
-  $scope.currentOccurrence = null;
+  $scope.currentSubRoute = {'settings': []};
+  $scope.currentOccurrence = {'photos': []};
   $scope.currentRouteSettings = null;
 
   // Data structures for the application
@@ -150,6 +150,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   $scope.imageUriReceived = function(imageURI) {
+
       return window.resolveLocalFileSystemURI(imageURI, $scope.gotFileObject, $scope.fileError);
   };
 
@@ -162,15 +163,24 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     steroids.on("ready", function() {
       var fileName, targetDirURI;
       targetDirURI = "file://" + steroids.app.absoluteUserFilesPath;
-
       fileName = String(new Date().getTime()) + ".jpeg";
+
+      /*Complete image path*/
+      var imagePath = targetDirURI+fileName;
+
+
+      $scope.currentOccurrence['photos'].push(imagePath);
+
+      //alert($scope.currentSubRoute['photos']
+
       return window.resolveLocalFileSystemURI(targetDirURI, function(directory) {
         return file.moveTo(directory, fileName, fileMoved, $scope.fileError);
       }, $scope.fileError);
     });
     return fileMoved = function(file) {
+
       alert("Foto associada a patologia.");
-      console.log(file.name);
+
     };
   };
 
@@ -280,7 +290,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
         function(position) {
           route.subRoutes[lastIndex].push(position);
-          alert(route.subRoutes[lastIndex]['settings']);
         },
         function(error) {
           alert("erro a gravar a rota");
@@ -313,6 +322,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @param  Object $event
    */
   $scope.triggerRoadSettings = function($event) {
+
     $scope.route_settings_visibility = true;
   };
 
