@@ -18,7 +18,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentRoute = null;
   $scope.currentRouteWatcher = null;
   $scope.currentSubRoute = {'settings': []};
-  $scope.currentOccurrence = {'photos': []};
+  $scope.currentOccurrence = null;
+  $scope.currentCustomId = null;
   $scope.currentRouteSettings = null;
 
   // Data structures for the application
@@ -120,7 +121,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     '43' : {'name' : 'Covas - Tipo 3'},
     '51' : {'name' : 'Reparações - Tipo 1'},
     '52' : {'name' : 'Reparações - Tipo 2'},
-    '53' : {'name' : 'Reparações - Tipo 3'}
+    '53' : {'name' : 'Reparações - Tipo 3'},
+    '61' : {'name' : 'Pontual - Tipo 1'},
+    '62' : {'name' : 'Pontual - Tipo 2'},
+    '63' : {'name' : 'Pontual - Tipo 3'}
+
   };
 
   // instantiates the map
@@ -326,9 +331,48 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.route_settings_visibility = true;
   };
 
+
   $scope.closeRoadSettings = function($event) {
     // set the previous values
     $scope.route_settings_visibility = false;
+  };
+
+  /**
+   * triggerRoadSettings shows the form for custom occurrence name
+   * @param  Object $event
+   */
+  $scope.triggerCustomOccurrenceSettings = function($event){
+
+
+     if($scope.trackingIsActive()) {
+      if ($scope.currentRoute) {
+
+        var id = $event.target.attributes.rel.value;
+
+        $scope.currentCustomId = id;
+
+        var button = angular.element($event.target);
+
+        if($scope.instances[id].watching) {
+          button.removeClass('topcoat-button--large--cta');
+          button.addClass('topcoat-button--large');
+
+          $scope.stopsAndSavePathOccurrence(id);
+        } else {
+          $scope.custom_settings_visibility = true;
+        }
+      } else {
+        alert('You need to select or create a new route to add occurrences.');
+      }
+    } else {
+      alert("Tem que ter a rota iniciada para registar ocorrências.");
+    }
+  };
+
+
+  $scope.cancelCustomOccurrence = function($event) {
+    // set the previous values
+    $scope.custom_settings_visibility = false;
   };
 
   /**
@@ -358,6 +402,20 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
 
+  /**
+   * startCustomOccurrence start new custom occurrence
+   * @param  Object $event
+   */
+  $scope.startCustomOccurrence = function($event) {
+
+
+
+   $scope.cancelCustomOccurrence($event);
+   $scope.triggerCustomPathOcc($event);
+
+  };
+
+      
 
 
 
@@ -442,14 +500,18 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void changes the state of the app
    */
   $scope.triggerPathOcc = function($event) {
+
+
     if($scope.trackingIsActive()) {
       if ($scope.currentRoute) {
         var id = $event.target.attributes.rel.value;
+
         var button = angular.element($event.target);
         // if it's watching something, stops
         if($scope.instances[id].watching) {
           button.removeClass('topcoat-button--large--cta');
           button.addClass('topcoat-button--large');
+
           $scope.stopsAndSavePathOccurrence(id);
         } else {
           button.removeClass('topcoat-button--large');
@@ -462,6 +524,21 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     } else {
       alert("Tem que ter a rota iniciada para registar ocorrências.");
     }
+  };
+
+
+  /**
+   * triggerPathOcc function that starts or stops a type path occurrence,
+   *                triggered when a button is clicked
+   * @param Object $event has the details of the event, we need this to check
+   *                      the type of occ it is
+   * @return void changes the state of the app
+   */
+  $scope.triggerCustomPathOcc = function($event) {
+  
+    $scope.startPathOccurrence(id);
+    $scope.custom_settings_visibility = false;
+       
   };
 
   /**
@@ -699,10 +776,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Set up the navigation bar
   steroids.view.navigationBar.show("Prototype");
 
-  var rightButton = new steroids.buttons.NavigationBarButton();
-  rightButton.title = "Foto";
-  rightButton.onTap = function() {
+  var leftButton = new steroids.buttons.NavigationBarButton();
+  leftButton.title = "Foto";
+  leftButton.onTap = function() {
     if($scope.currentOccurrence) {
+      alert($scope.currentOccurrence);
       $scope.takePicture();
     } else {
       alert("Por favor seleccione uma patologia primeiro");
@@ -721,7 +799,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   steroids.view.navigationBar.setButtons({
-    right: [rightButton,syncButton],
+    right: [syncButton],
+    left: [leftButton],
 
     overrideBackButton: true
   }, {
