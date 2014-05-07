@@ -18,7 +18,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentRoute = null;
   $scope.currentRouteWatcher = null;
   $scope.currentSubRoute = {'settings': []};
-  $scope.currentOccurrence = {'photos': []};
+  $scope.currentOccurrence = null;
   $scope.currentRouteSettings = null;
 
   // Data structures for the application
@@ -699,10 +699,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   // Set up the navigation bar
   steroids.view.navigationBar.show("Prototype");
 
-  var rightButton = new steroids.buttons.NavigationBarButton();
-  rightButton.title = "Foto";
-  rightButton.onTap = function() {
+  var leftButton = new steroids.buttons.NavigationBarButton();
+  leftButton.title = "Foto";
+  leftButton.onTap = function() {
     if($scope.currentOccurrence) {
+      alert($scope.currentOccurrence);
       $scope.takePicture();
     } else {
       alert("Por favor seleccione uma patologia primeiro");
@@ -721,7 +722,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
   steroids.view.navigationBar.setButtons({
-    right: [rightButton,syncButton],
+    right: [syncButton],
+    left: [leftButton],
 
     overrideBackButton: true
   }, {
