@@ -5,6 +5,41 @@
   #map-container {min-height:400px; margin-bottom:10px;}
   #commander {margin-right:0px;font-family:"Courier New", Courier, monospace;}
 </style>
+<script>
+var TimepickerDemoCtrl = function ($scope) {
+  alert("sdsdsdsdsd");
+  $scope.mytime = new Date();
+
+  $scope.hstep = 1;
+  $scope.mstep = 15;
+
+  $scope.options = {
+    hstep: [1, 2, 3],
+    mstep: [1, 5, 10, 15, 25, 30]
+  };
+
+  $scope.ismeridian = true;
+  $scope.toggleMode = function() {
+    $scope.ismeridian = ! $scope.ismeridian;
+  };
+
+  $scope.update = function() {
+    var d = new Date();
+    d.setHours( 14 );
+    d.setMinutes( 0 );
+    $scope.mytime = d;
+  };
+
+  $scope.changed = function () {
+    console.log('Time changed to: ' + $scope.mytime);
+  };
+
+  $scope.clear = function() {
+    $scope.mytime = null;
+  };
+};
+
+</script>
 
 <div ng-controller="IndexCtrl" class="container-fluid no-padding">
 
@@ -43,14 +78,20 @@
             <h3>Bermas Pavimentadas</h3>
             <select ng-model="settings_bermas" ng-options="s.id as s.name for s in settingsBermas" class="topcoat-select">
             </select>
+
+            
           </div>
 
           <div class="col-md-4 no-padding">
             <h3>Largura da berma</h3>
             <select ng-model="settings_largura_berma" ng-options="s.id as s.name for s in settingsLarguraDaBerma" class="topcoat-select">
-
             </select>
 
+            <div ng-controller="TimepickerDemoCtrl">
+
+              <timepicker ng-model="mytime" ng-change="changed()" hour-step="hstep" minute-step="mstep" show-meridian="ismeridian"></timepicker>
+            </div>
+          
             <h3>Número de vias</h3>
             <select ng-model="settings_nrvias" ng-options="s.id as s.name for s in settingsNrVias" class="topcoat-select">
 
@@ -88,22 +129,22 @@
 
         <div class="col-md-8 no-padding" id="commander" ng-show="!route_settings_visibility">
           <form class="simple-form">
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="11">R1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="11">R1</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="12">R2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="13">R3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="21">F1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="22">F2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="23">F3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="13">R3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="21">F1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="22">F2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="23">F3</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="31">P1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="32">P2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="33">P3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="41">C1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="42">C2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="43">C3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="51">R1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="52">R2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="saveSingleOccurrence($event)" rel="53">R3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerStartRoute($event)">IN</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="32">P2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="33">P3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="41">C1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="42">C2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="43">C3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="51">R1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="52">R2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="53">R3</button>
+            <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="triggerStartRoute($event)" style="background-color:green;">IN</button>
             <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="saveRoute($event)" style="background-color:red;">GR</button>
             <button class="topcoat-button--large--cta speroroads-bottom" hm-tap="triggerRoadSettings($event)">AL</button>
             
