@@ -19,6 +19,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentRouteWatcher = null;
   $scope.currentSubRoute = {'settings': []};
   $scope.currentOccurrence = null;
+  $scope.currentCustomId = null;
   $scope.currentRouteSettings = null;
 
   // Data structures for the application
@@ -348,6 +349,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
         var id = $event.target.attributes.rel.value;
 
+        $scope.currentCustomId = id;
+
         var button = angular.element($event.target);
 
         if($scope.instances[id].watching) {
@@ -404,9 +407,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @param  Object $event
    */
   $scope.startCustomOccurrence = function($event) {
-   
+
+
+
    $scope.cancelCustomOccurrence($event);
-   $scope.triggerPathOcc($event);
+   $scope.triggerCustomPathOcc($event);
+
   };
 
       
@@ -495,6 +501,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.triggerPathOcc = function($event) {
 
+
     if($scope.trackingIsActive()) {
       if ($scope.currentRoute) {
         var id = $event.target.attributes.rel.value;
@@ -517,6 +524,21 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     } else {
       alert("Tem que ter a rota iniciada para registar ocorrências.");
     }
+  };
+
+
+  /**
+   * triggerPathOcc function that starts or stops a type path occurrence,
+   *                triggered when a button is clicked
+   * @param Object $event has the details of the event, we need this to check
+   *                      the type of occ it is
+   * @return void changes the state of the app
+   */
+  $scope.triggerCustomPathOcc = function($event) {
+  
+    $scope.startPathOccurrence(id);
+    $scope.custom_settings_visibility = false;
+       
   };
 
   /**
