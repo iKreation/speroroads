@@ -49,8 +49,8 @@
 
           <div class="col-md-4 no-padding">
             <h3>Largura da berma</h3>
-            <select ng-model="settings_largura_berma" ng-options="s.id as s.name for s in settingsLarguraDaBerma" class="topcoat-select">
-            </select>
+            <input type="number" step="0.1" min="0.1" max="10.0" ng-model="settings_largura_berma" ng-options="s.id as s.name for s in settingsLarguraDaBerma">
+            </input>
 
            
           
@@ -62,9 +62,11 @@
 
           <div class="col-md-4 no-padding">
             <h3>Largura total pavimento</h3>
-            <select ng-model="settings_largura_pavimento" ng-model="settings_largura_pavimento" ng-options="s.id as s.name for s in settingsLarguraTotalPavimento" class="topcoat-select" style="margin-bottom:10px">
+            <input type="number" step="0.1" min="0.1" max="10.0" ng-model="settings_largura_pavimento" ng-options="s.id as s.name for s in settingsLarguraTotalPavimento" style="margin-bottom:10px">
+            </input>
+            <!--<select ng-model="settings_largura_pavimento" ng-model="settings_largura_pavimento" ng-options="s.id as s.name for s in settingsLarguraTotalPavimento" class="topcoat-select" style="margin-bottom:10px">
 
-            </select>
+            </select>-->
           </div>
         </div>
       </div>

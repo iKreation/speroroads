@@ -20,6 +20,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentSubRoute = {'settings': []};
   $scope.currentOccurrence = null;
   $scope.currentCustomId = null;
+  $scope.currentCustomButton = null;
   $scope.currentRouteSettings = null;
 
   // Data structures for the application
@@ -106,25 +107,29 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   // type of occurrences, check with backend
   $scope.instances = {
-    '11' : {'name' : 'Rodeiras - Tipo 1'},
-    '12' : {'name' : 'Rodeiras - Tipo 2', 'watching' : false,
-                                          'points': [], 'watch_id': null},
-    '13' : {'name' : 'Rodeiras - Tipo 3'},
-    '21' : {'name' : 'Fendilhamento - Tipo 1'},
-    '22' : {'name' : 'Fendilhamento - Tipo 2'},
-    '23' : {'name' : 'Fendilhamento - Tipo 3'},
-    '31' : {'name' : 'Peladas etc - Tipo 1', 'watching' : false, 'points': [], 'watch_id': null},
-    '32' : {'name' : 'Peladas etc - Tipo 2'},
-    '33' : {'name' : 'Peladas etc - Tipo 3'},
-    '41' : {'name' : 'Covas - Tipo 1'},
-    '42' : {'name' : 'Covas - Tipo 2'},
-    '43' : {'name' : 'Covas - Tipo 3'},
-    '51' : {'name' : 'Reparações - Tipo 1'},
-    '52' : {'name' : 'Reparações - Tipo 2'},
-    '53' : {'name' : 'Reparações - Tipo 3'},
-    '61' : {'name' : 'Pontual - Tipo 1'},
-    '62' : {'name' : 'Pontual - Tipo 2'},
-    '63' : {'name' : 'Pontual - Tipo 3'}
+    '11' : {'name' : 'Rodeiras - Tipo 1',      'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '12' : {'name' : 'Rodeiras - Tipo 2',      'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '13' : {'name' : 'Rodeiras - Tipo 3',      'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+
+    '21' : {'name' : 'Fendilhamento - Tipo 1', 'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '22' : {'name' : 'Fendilhamento - Tipo 2', 'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '23' : {'name' : 'Fendilhamento - Tipo 3', 'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+
+    '31' : {'name' : 'Peladas etc - Tipo 1',   'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '32' : {'name' : 'Peladas etc - Tipo 2',   'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '33' : {'name' : 'Peladas etc - Tipo 3',   'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+
+    '41' : {'name' : 'Covas - Tipo 1',         'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '42' : {'name' : 'Covas - Tipo 2',         'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '43' : {'name' : 'Covas - Tipo 3',         'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+
+    '51' : {'name' : 'Reparações - Tipo 1',    'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '52' : {'name' : 'Reparações - Tipo 2',    'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '53' : {'name' : 'Reparações - Tipo 3',    'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+
+    '61' : {'name' : '',                       'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '62' : {'name' : '',                       'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '63' : {'name' : '',                       'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null}
 
   };
 
@@ -504,18 +509,37 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
     if($scope.trackingIsActive()) {
       if ($scope.currentRoute) {
+
         var id = $event.target.attributes.rel.value;
 
         var button = angular.element($event.target);
+
         // if it's watching something, stops
         if($scope.instances[id].watching) {
-          button.removeClass('topcoat-button--large--cta');
+          if ($scope.instances[id].priority==1) {
+            button.removeClass('topcoat-button--large--cta--yellow');
+          }
+          else if($scope.instances[id].priority==2){
+            button.removeClass('topcoat-button--large--cta--orange');
+          }
+          else{
+            button.removeClass('topcoat-button--large--cta--red');
+          }
+          
           button.addClass('topcoat-button--large');
 
           $scope.stopsAndSavePathOccurrence(id);
         } else {
           button.removeClass('topcoat-button--large');
-          button.addClass('topcoat-button--large--cta');
+          if ($scope.instances[id].priority==1) {
+            button.addClass('topcoat-button--large--cta--yellow');
+          }
+          else if($scope.instances[id].priority==2){
+            button.addClass('topcoat-button--large--cta--orange');
+          }
+          else{
+            button.addClass('topcoat-button--large--cta--red');
+          }
           $scope.startPathOccurrence(id);
         }
       } else {
