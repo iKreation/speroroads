@@ -232,8 +232,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       if ($scope.trackingIsActive()) {
         alert("Terminou a rota");
         // if it's watching something, stops
-        button.removeClass('topcoat-button--large--cta');
-        button.addClass('topcoat-button--large');
+        button.removeClass('topcoat-button--large--cta--record');
+        button.addClass('topcoat-button--large--cta--new');
         $scope.stopRoute();
       } 
 
@@ -255,8 +255,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
         if(emptySetting==false){
 
-          button.removeClass('topcoat-button--large');
-          button.addClass('topcoat-button--large--cta');
+          button.removeClass('topcoat-button--large--cta--new');
+          button.addClass('topcoat-button--large--cta--record');
           $scope.startRoute();
         }
 
