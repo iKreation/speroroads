@@ -125,10 +125,16 @@ limitations under the License.
 .topcoat-button--large--cta,
 .topcoat-button--large--cta--yellow,
 .topcoat-button--large--cta--orange,
-.topcoat-button--large--cta--red {
+.topcoat-button--large--cta--red,
+.topcoat-button--large--cta--record,
+.topcoat-button--large--cta--new
+
+ {
   position: relative;
   display: inline-block;
   vertical-align: top;
+  width: 74px;
+  height: 74px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -303,6 +309,30 @@ limitations under the License.
   text-shadow: 0 -1px rgba(0,0,0,0.36);
 }
 
+.topcoat-button--large--cta--record {
+  border: 1px solid #143250;
+  background-color: #000000;
+  background-image: url('Record-Normal-icon.png');
+  background-size: 100%;
+  -webkit-box-shadow: inset 0 1px rgba(255,255,255,0.36);
+  box-shadow: inset 0 1px rgba(255,255,255,0.36);
+  color: #000;
+  font-weight: 500;
+  text-shadow: 0 -1px rgba(1,1,1,1);
+}
+
+.topcoat-button--large--cta--new {
+  border: 1px solid #143250;
+  background-color: green;
+  background-image: url('play-icon.png');
+  background-size: 100%;
+  -webkit-box-shadow: inset 0 1px rgba(255,255,255,0.36);
+  box-shadow: inset 0 1px rgba(255,255,255,0.36);
+  color: #000;
+  font-weight: 500;
+  text-shadow: 0 -1px rgba(1,1,1,1);
+}
+
 .topcoat-button--large--cta--yellow {
   border: 1px solid #143250;
   background-color: #ffff00;
@@ -339,7 +369,8 @@ limitations under the License.
 .topcoat-button--large--cta.is-active,
 .topcoat-button--large--cta--yellow.is-active,
 .topcoat-button--large--cta--orange.is-active,
- .topcoat-button--large--cta--red.is-active{
+.topcoat-button--large--cta--red.is-active,
+.topcoat-button--large--cta--record.is-active{
   background-color: #0380e8;
   -webkit-box-shadow: inset 0 1px rgba(0,0,0,0.12);
   box-shadow: inset 0 1px rgba(0,0,0,0.12);
@@ -370,7 +401,8 @@ limitations under the License.
 .topcoat-button--large--cta,
 .topcoat-button--large--cta--yellow,
 .topcoat-button--large--cta--orange,
-.topcoat-button--large--cta--red {
+.topcoat-button--large--cta--red,
+.topcoat-button--large--cta--record.is-active {
   font-size: 1.7rem;
   line-height: 2rem;
 }
