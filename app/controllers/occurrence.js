@@ -793,6 +793,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
 
     selectedRoute.removeClass('topcoat-list__item');
+
     selectedRoute.addClass('topcoat-list__item__selected');
 
 
