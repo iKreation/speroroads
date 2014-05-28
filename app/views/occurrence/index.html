@@ -105,7 +105,7 @@
             <ul class="topcoat-list">
               <!-- order is reversed created timestamp -->
               <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
-              <li class="topcoat-list__item" ng-repeat="occur in currentOccurrences" hm-tap='openOccurrence(occur.id)'>
+              <li class="topcoat-list__item" ng-repeat="occur in currentOccurrences | orderBy: '-createddate'" hm-tap='openOccurrence(occur.id)'>
               {{ occur.name }}
               </li>
             </ul>
