@@ -14,7 +14,7 @@
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
             <li class="topcoat-list__item" hm-tap="newRoute($event)" style="text-align:center">++ New Route ++</li>
-            <li class="topcoat-list__item" hm-tap="openRoute(route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
+            <li class="topcoat-list__item" hm-tap="openRoute($event,route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
             {{ route.name }}
             <button hm-tap='delete(route.id)' style="float:right">Eliminar</button>
             </li>
