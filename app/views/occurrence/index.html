@@ -1,5 +1,5 @@
 <style>
-  .speroroads-bottom { margin-bottom:5px;padding:25px;}
+  .speroroads-bottom { margin-bottom:5px;padding:20px;}
   .list-evaluation { border-right:0px solid #333; padding-right:0px; min-height:100%;}
   .no-padding {padding:0px;}
   #map-container {min-height:400px; margin-bottom:10px;}
@@ -100,7 +100,7 @@
 
 
       <div class="row">
-        <div class="col-md-4 no-padding" style="padding-right:10px;">
+        <div class="col-md-3 no-padding" style="padding-right:10px;">
           <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;" ng-show="!route_settings_visibility && !custom_settings_visibility">
             <ul class="topcoat-list">
               <!-- order is reversed created timestamp -->
@@ -112,29 +112,29 @@
           </div>
         </div>
 
-        <div class="col-md-8 no-padding" id="commander" ng-show="!route_settings_visibility && !custom_settings_visibility">
+        <div class="col-md-9 no-padding" id="commander" ng-show="!route_settings_visibility && !custom_settings_visibility">
           <form class="simple-form">
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="11">R1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="12">R2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="13">R3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="21">F1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="22">F2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="23">F3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="31">P1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="32">P2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="33">P3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="41">C1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="42">C2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="43">C3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="51">R1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="52">R2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="53">R3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="11">Rod1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="12">Rod2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="13">Rod3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="21">Fen1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="22">Fen2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="23">Fen3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="31">Pel1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="32">Pel2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="33">Pel3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="41">Cov1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="42">Cov2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="43">Cov3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="51">Rep1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="52">Rep2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="53">Rep3</button>
             <button class="topcoat-button--large--cta--new speroroads-bottom" hm-tap="triggerStartRoute($event)"></button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="saveRoute($event)" style="background-image: url('/images/Toolbar-Save.png'); background-size:100%;background-color:blue"></button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerRoadSettings($event)" style="background-image: url('/images/Control-Panel.png'); background-size:100%;"></button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="61">N1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="62">N2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="63">N3</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="61">Pon1</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="62">Pon2</button>
+            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="63">Pon3</button>
             <br>
           </form>
         </div>
