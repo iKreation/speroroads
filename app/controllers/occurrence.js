@@ -791,10 +791,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     var selectedRoute = angular.element($event.target);
 
 
-
-    selectedRoute.removeClass('topcoat-list__item');
+    selectedRoute.parent().children().removeClass('topcoat-list__item__selected');
     selectedRoute.addClass('topcoat-list__item__selected');
-
 
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
