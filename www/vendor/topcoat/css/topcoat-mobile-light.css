@@ -132,12 +132,11 @@ limitations under the License.
 .topcoat-button--large--cta--settings
 
 
+
  {
   position: relative;
   display: inline-block;
   vertical-align: top;
-  width: 74px;
-  height: 74px;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -146,6 +145,7 @@ limitations under the License.
   background-clip: padding-box;
   padding: 0;
   margin: 0;
+  
   font: inherit;
   color: inherit;
   background: transparent;
@@ -161,6 +161,7 @@ limitations under the License.
   overflow: hidden;
   padding: 0 1.25rem;
   font-size: 16px;
+  font-weight:bold;
   line-height: 3rem;
   letter-spacing: 1px;
   color: #454545;
