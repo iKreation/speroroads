@@ -174,14 +174,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       var fileName, targetDirURI;
       targetDirURI = "file://" + steroids.app.absoluteUserFilesPath;
       fileName = String(new Date().getTime()) + ".jpeg";
-
       /*Complete image path*/
       var imagePath = targetDirURI+fileName;
 
-
       $scope.currentOccurrence['photos'].push(imagePath);
 
-      //alert($scope.currentSubRoute['photos']
+      alert($scope.currentOccurrence['photos'].length);
 
       return window.resolveLocalFileSystemURI(targetDirURI, function(directory) {
         return file.moveTo(directory, fileName, fileMoved, $scope.fileError);
@@ -285,19 +283,15 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         }
     }
   }
-
   else {
     alert("Crie ou seleccione uma nova rota para iniciar o levantamento.");
   }
-
 };
 
   /**
    * stopRoute clear the watchers and reset the state
    */
   $scope.stopRoute = function() {
-
-
 
     navigator.geolocation.clearWatch($scope.currentRouteWatcher);
     $scope.currentRouteWatcher = null;
@@ -339,14 +333,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.syncWithServer = function($event) {
 
     var route = $scope.getCurrentRoute();
+    console.log(JSON.stringify(route));
 
-    $http({
-        method  : 'POST',
-        url     : '',
-        data    : route,
-        headers : { 'Content-Type': 'application/json' }
-    })
+    $http.post('/someUrl', route).success($scope.successSync);
 
+  };
+
+  $scope.successSync = function($resp) {
 
   };
 
@@ -500,6 +493,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       instance_id : id,
       position : null,
       path : path,
+      photos: [],
       name: $scope.instances[id].name,
       createddate : new Date(),
       type: 'path'
