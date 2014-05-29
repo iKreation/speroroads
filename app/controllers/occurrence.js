@@ -778,15 +778,25 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * open Route
    * @param  int id route ID
    */
-  $scope.openRoute = function(id) {
+  $scope.openRoute = function($event,id) {
     // only allow to change the route if there is no gps tracking active
+
+
     if($scope.trackingIsActive()) {
       alert("Está a gravar uma rota, por favor termine a gravação para consultar outra");
       return false;
     }
 
+
+    var selectedRoute = angular.element($event.target);
+
+
+    selectedRoute.parent().children().removeClass('topcoat-list__item__selected');
+    selectedRoute.addClass('topcoat-list__item__selected');
+
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
+
         $scope.clearLayers();
         $scope.renderRoute($scope.routes[i]);
         return true;

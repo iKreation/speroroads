@@ -346,6 +346,8 @@ limitations under the License.
 }
 
 
+
+
 .topcoat-button--large--cta--save {
   border: 1px solid #143250;
   background-color: blue;
@@ -773,6 +775,17 @@ limitations under the License.
   padding: 1.25rem;
   border-top: 1px solid #eff1f1;
   border-bottom: 1px solid #bcbfbf;
+  
+}
+
+.topcoat-list__item__selected {
+  margin: 0;
+  padding: 0;
+  padding: 1.25rem;
+  border-top: 1px solid #eff1f1;
+  border-bottom: 1px solid #bcbfbf;
+  color: blue;
+  font-weight: bold;
 }
 .topcoat-list__item:first-child {
   border-top: 1px solid rgba(0,0,0,0.05);
