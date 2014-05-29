@@ -228,13 +228,36 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.triggerStartRoute = function($event) {
 
     var button = angular.element($event.target);
+
     if($scope.currentRoute) {
       if ($scope.trackingIsActive()) {
-        alert("Terminou a rota");
-        // if it's watching something, stops
-        button.removeClass('topcoat-button--large--cta--record');
-        button.addClass('topcoat-button--large--cta--new');
-        $scope.stopRoute();
+
+        var watching = false;
+
+        var occurrences = $scope.instances;
+
+
+        for(var i in occurrences) {
+          
+          if(occurrences[i].watching==true){
+            watching = true;
+            break;
+          }
+        }
+
+        if(watching==false){
+
+          alert("Terminou a rota");
+          // if it's watching something, stops
+          button.removeClass('topcoat-button--large--cta--record');
+          button.addClass('topcoat-button--large--cta--new');
+          $scope.stopRoute();
+
+        }
+        else{
+
+            alert("Termine o registo das ocurrencias antes de terminar a rota");
+        }
       } 
 
       else {
@@ -276,6 +299,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * stopRoute clear the watchers and reset the state
    */
   $scope.stopRoute = function() {
+
+    
+
     navigator.geolocation.clearWatch($scope.currentRouteWatcher);
     $scope.currentRouteWatcher = null;
   };
@@ -420,11 +446,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   };
 
-      
-
-
-
-
+  
   /**
    * startPathOccurrence init GPS watcher and makes the relation to the instances
    * @param  int id is the type of instance referenced in $scope.instances
