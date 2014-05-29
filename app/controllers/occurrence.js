@@ -488,7 +488,20 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
     /* refresh */
     $scope.$apply();
-    $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
+
+    var lineColor;
+
+    if ($scope.instances[id].priority==1) {
+            lineColor='yellow';
+          }
+          else if($scope.instances[id].priority==2){
+            lineColor='orange';
+          }
+          else{
+            lineColor='red';
+          }
+
+    $scope.currentPolyline = L.polyline(path, {color: lineColor}).addTo(map);
     // zoom the map to the polyline
     map.fitBounds($scope.currentPolyline.getBounds());
     // clear points
@@ -647,6 +660,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void
    */
   $scope.newRoute = function() {
+
     var dt = new Date();
     var route_id = dt;
     var buildDate = dt.getDate() + '/' + dt.getMonth() + '/' + dt.getFullYear() + ' ' + dt.getHours()  + ':' + dt.getMinutes();
@@ -658,6 +672,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       options: {
       }
     };
+
+
     $scope.routes.push(route);
     $scope.currentRoute = route.id;
     $scope.currentOccurrences.length = 0;
