@@ -82,7 +82,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     {id:'12',name:'12'},
     {id:'13',name:'13'},
     {id:'14',name:'14'},
-    {id:'15',name:'15'}  
+    {id:'15',name:'15'}
 
   ];
 
@@ -237,28 +237,25 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         var occurrences = $scope.instances;
 
 
-        for(var i in occurrences) {
-          
-          if(occurrences[i].watching==true){
+        for (var i in occurrences) {
+
+          if(occurrences[i].watching == true) {
             watching = true;
             break;
           }
         }
 
-        if(watching==false){
-
+        if (watching == false) {
           alert("Terminou a rota");
           // if it's watching something, stops
           button.removeClass('topcoat-button--large--cta--record');
           button.addClass('topcoat-button--large--cta--new');
           $scope.stopRoute();
 
-        }
-        else{
-
+        } else {
             alert("Termine o registo das ocurrencias antes de terminar a rota");
         }
-      } 
+      }
 
       else {
         var emptySetting=false;
@@ -274,7 +271,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         if (!$scope.currentRouteSettings){
           emptySetting = true;
         }
-  
+
 
         if(emptySetting==false){
 
@@ -287,7 +284,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           alert("Por favor defina todas as caracteristicas da via primeiro");
         }
     }
-  } 
+  }
 
   else {
     alert("Crie ou seleccione uma nova rota para iniciar o levantamento.");
@@ -300,7 +297,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    */
   $scope.stopRoute = function() {
 
-    
+
 
     navigator.geolocation.clearWatch($scope.currentRouteWatcher);
     $scope.currentRouteWatcher = null;
@@ -313,7 +310,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.startRoute = function($event) {
     // gets the current selected route
     var route = $scope.getCurrentRoute();
-    
+
     if(!$scope.trackingIsActive()) {
       // starts the watcher
       alert("nova rota a gravar");
@@ -331,7 +328,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           alert("erro a gravar a rota");
         },
       options);
-    } 
+    }
 
     else {
       alert("Erro - Tem uma rota ativa");
@@ -419,8 +416,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.settings_bermas;
     $scope.settings_largura_berma;
     $scope.settings_nrvias;
-    $scope.settings_largura_pavimento; 
-    
+    $scope.settings_largura_pavimento;
+
 
    var routeSettings = [$scope.settings_pav,
                         $scope.settings_bermas,
@@ -446,7 +443,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   };
 
-  
+
   /**
    * startPathOccurrence init GPS watcher and makes the relation to the instances
    * @param  int id is the type of instance referenced in $scope.instances
@@ -529,7 +526,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     // clear points
     $scope.instances[id].points = [];
     // stop watching
-    steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[id].name);
   };
 
   /**
@@ -560,7 +556,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           else{
             button.removeClass('topcoat-button--large--cta--red');
           }
-          
+
           button.addClass('topcoat-button--large');
 
           $scope.stopsAndSavePathOccurrence(id);
@@ -594,10 +590,10 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * @return void changes the state of the app
    */
   $scope.triggerCustomPathOcc = function($event) {
-  
+
     $scope.startPathOccurrence(id);
     $scope.custom_settings_visibility = false;
-       
+
   };
 
   /**
@@ -630,7 +626,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
           /* refresh */
           $scope.$apply();
-          steroids.view.navigationBar.show("Speroroads :: Gravado " + $scope.instances[$event.target.attributes.rel.value].name);
         },
         function(error) {
           alert("Erro a adicionar ocorrencia");
@@ -775,7 +770,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           // zoom the map to the polyline
           map.fitBounds($scope.currentPolyline.getBounds());
         }
-        steroids.view.navigationBar.show("Speroroads :: Vendo " + $scope.instances[$scope.currentOccurrences[o].id].name);
       }
     }
   };
