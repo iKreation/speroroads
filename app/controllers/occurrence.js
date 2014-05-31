@@ -20,7 +20,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentSubRoute = {'settings': []};
   $scope.currentOccurrence = null;
   $scope.currentCustomId = null;
-  $scope.currentCustomButton = null;
+  $scope.currentPriority = null;
   $scope.currentRouteSettings = null;
 
   // Data structures for the application
@@ -127,10 +127,10 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     '52' : {'name' : 'Reparações - Tipo 2',    'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
     '53' : {'name' : 'Reparações - Tipo 3',    'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
 
-    '61' : {'name' : 'Tampas Saneamento',      'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
-    '62' : {'name' : 'Grelhas de sumidouros',  'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
-    '63' : {'name' : 'Passadeiras',            'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null}
-
+    '61' : {'name' : 'Tampas Saneamento',      'priority' : null, 'watching' : false, 'points': [], 'watch_id': null},
+    '62' : {'name' : 'Grelhas de sumidouros',  'priority' : null, 'watching' : false, 'points': [], 'watch_id': null},
+    '63' : {'name' : 'Passadeiras',            'priority' : null, 'watching' : false, 'points': [], 'watch_id': null},
+    '64' : {'name' : null,                     'priority' : null, 'watching' : false, 'points': [], 'watch_id': null}
   };
 
   // instantiates the map
@@ -226,8 +226,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.triggerStartRoute = function($event) {
 
     var button = angular.element($event.target);
-
-
 
     if($scope.currentRoute) {
       if ($scope.trackingIsActive()) {
@@ -346,9 +344,126 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
 
+  $scope.startCustomRoute = function($event) {
+
+    var priority = $event.target.attributes.rel.value;
+    var button;
+
+    $scope.instances[$scope.currentCustomId].priority = priority;
+
+    if ($scope.currentRoute) {
+
+      var id = $scope.currentCustomId;
+
+      if ($scope.instances[id].priority==1) {
+        button = document.getElementById(id).className += ' topcoat-button--large--cta--yellow';
+      }
+      else if($scope.instances[id].priority==2){
+        button = document.getElementById(id).className += ' topcoat-button--large--cta--orange';
+      }
+      else{
+        button = document.getElementById(id).className += ' topcoat-button--large--cta--red';
+      }
+      $scope.startPathOccurrence(id);
+    } 
+
+    else {
+      alert('You need to select or create a new route to add occurrences.');
+    }
+
+    $scope.custom_settings_visibility = false;
+
+  }
+
+
+  $scope.newOcurrenceName = function($event) {
+
+    var id = $event.target.attributes.rel.value;
+
+    $scope.currentCustomId = id;
+
+    if(!$scope.instances[id].watching) {
+
+      if($scope.trackingIsActive()) {
+
+        $scope.new_name_visibility = true;
+      }
+
+      else {
+        alert("Tem que ter a rota iniciada para registar ocorrências.");
+      }
+    }
+
+    else { 
+
+      button = document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
+
+      $scope.stopsAndSavePathOccurrence(id);
+    
+    }
+
+
+  }
+
+
   $scope.triggerCustomOccurrenceSettings = function($event) {
 
-    $scope.custom_settings_visibility = true;
+
+    var button;
+    var id;
+
+    if ($scope.currentCustomId != 64) {
+      id = $event.target.attributes.rel.value;
+
+      $scope.currentCustomId = id;
+    
+    }
+
+    else {
+
+      id = 64;
+    }
+
+    if (id == 64) {
+      $scope.instances[id].name = document.getElementById("occurrenceName").value;
+    }
+
+    if(!$scope.instances[id].watching) {
+
+
+      if($scope.trackingIsActive()) {
+      
+        
+        $scope.custom_settings_visibility = true;
+        $scope.new_name_visibility = false;
+
+      }
+
+      else {
+
+        alert("Tem que ter a rota iniciada para registar ocorrências.");
+
+      }
+    }
+
+    else { 
+
+      button = document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
+
+      $scope.stopsAndSavePathOccurrence(id);
+    
+    }
+
+  }
+
+  $scope.cancelNewNameOccurrence = function($event){
+
+    $scope.new_name_visibility = false;
+  }
+
+  $scope.cancelCustomOccurrence = function($event) {
+
+    $scope.custom_settings_visibility = false;
   }
 
   /**
@@ -430,6 +545,22 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.clearLayers();
     // updates the flag
     $scope.instances[id].watching = false;
+
+    var type;
+
+    if ($scope.instances[id].priority == 1) {
+
+      type = ' - Tipo 1';
+
+    }
+
+    else if ($scope.instances[id].priority == 2) {
+      type = ' - Tipo 2';
+    }
+
+    else {
+      type = ' - Tipo 3';
+    }
     // stop watching
     navigator.geolocation.clearWatch($scope.instances[id].watch_id);
     $scope.instances[id].watch_id = null;
@@ -450,7 +581,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       position : null,
       path : path,
       photos: [],
-      name: $scope.instances[id].name,
+      name: $scope.instances[id].name+type,
       createddate : new Date(),
       type: 'path'
     });
