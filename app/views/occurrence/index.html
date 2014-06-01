@@ -13,7 +13,7 @@
       <div class="topcoat-list__container list-evaluation" style="max-height:730px;">
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
-            <li class="topcoat-list__item" hm-tap="newRoute($event)" style="text-align:center">++ New Route ++</li>
+            <li class="topcoat-list__item" hm-tap="routeName($event)" style="text-align:center">++ New Route ++</li>
             <li class="topcoat-list__item" hm-tap="openRoute($event,route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
             {{ route.name }}
             <button hm-tap='delete(route.id)' style="float:right">Eliminar</button>
@@ -74,32 +74,51 @@
         <div class="col-md-12" style="padding:10px;">
           <button class="topcoat-button speroroads-bottom" hm-tap="changeRoadSettings()">Alterar</button>
           <button class="topcoat-button speroroads-bottom" hm-tap="closeRoadSettings()">Cancelar</button>
-          <img style="display:none;width:60px;height:60px;" id="smallImage" src="" />
         </div>
       </div>
 
+
+      <div class="row col-md-12 no-padding" id="custom-route" ng-show="custom_route_visibility">
+        <div class="col-md-12">
+          <h2>Nome da rota:</h2>
+            <input name="name" id="routeName" ng-model="route.name"></input>
+            <div class="col-md-12 no-padding" style="margin-top:10px">
+              <button class="topcoat-button speroroads-bottom" hm-tap="newRoute($event)">Criar</button>
+              <button class="topcoat-button speroroads-bottom" hm-tap="cancelNewRoute($event)">Cancelar</button>
+            </div>
+        </div>
+      </div>
+
+
+      <div class="row col-md-12 no-padding" id="other" ng-show="new_name_visibility">
+        <h3>Nome da nova patologia:</h3>
+        <input id="occurrenceName" ng-model="settings_custom"></>
+        <div class="col-md-12 no-padding" style="margin-top:10px">
+            <button class="topcoat-button speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)">Continuar</button>
+            <button class="topcoat-button speroroads-bottom" hm-tap="cancelNewNameOccurrence($event)">Cancelar</button>
+        </div>
+      </div>
 
       <div class="row" id="custom-settings" ng-show="custom_settings_visibility">
         <div class="col-md-12">
           <h2>Patologia Pontual</h2>
+          <h3>Escolha a gravidade:</h3>
+          <button class="topcoat-button--large--cta--yellow speroroads-bottom" hm-tap="startCustomRoute($event)" rel="1">GR1</button>
+          <button class="topcoat-button--large--cta--orange speroroads-bottom" hm-tap="startCustomRoute($event)" rel="2">GR2</button>
+          <button class="topcoat-button--large--cta--red speroroads-bottom"    hm-tap="startCustomRoute($event)" rel="3">GR3</button>
 
-          <div class="col-md-4 no-padding">
-            <h3>Nome</h3>
-            <input name="Nome" ng-model="settings_custom"></>
+         
+          <div class="col-md-12 no-padding" style="margin-top:10px">
+            <button class="topcoat-button speroroads-bottom" hm-tap="cancelCustomOccurrence($event)">Cancelar</button>
           </div>
+           
+        </div>
+       
+      </div>
 
-        </div>
-      </div>
-      <div class="row" ng-show="custom_settings_visibility" style="margin-top:10px;">
-        <div class="col-md-12" style="padding:10px;">
-          <button class="topcoat-button speroroads-bottom" hm-tap="startCustomOccurrence()">Gravar</button>
-          <button class="topcoat-button speroroads-bottom" hm-tap="cancelCustomOccurrence()">Cancelar</button>
-          <img style="display:none;width:60px;height:60px;" id="smallImage" src="" />
-        </div>
-      </div>
       <div class="row">
         <div class="col-md-3 no-padding" style="padding-right:10px;">
-          <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;" ng-show="!route_settings_visibility && !custom_settings_visibility">
+          <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;" ng-show="!route_settings_visibility && !custom_settings_visibility && !new_name_visibility && !custom_route_visibility">
             <ul class="topcoat-list">
               <!-- order is reversed created timestamp -->
               <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>
@@ -109,7 +128,7 @@
             </ul>
           </div>
         </div>
-        <div class="col-md-9 no-padding" id="commander" ng-show="!route_settings_visibility && !custom_settings_visibility">
+        <div class="col-md-9 no-padding" id="commander" ng-show="!route_settings_visibility && !custom_settings_visibility && !custom_route_visibility && !new_name_visibility">
           <form class="simple-form">
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="11">Rod1</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="12">Rod2</button>
@@ -126,13 +145,13 @@
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="51">Rep1</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="52">Rep2</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="53">Rep3</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="61">Pon1</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="62">Pon2</button>
-            <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)" rel="63">Pon3</button>
+            <button class="topcoat-button--large speroroads-bottom" id="61" hm-tap="triggerCustomOccurrenceSettings($event)" rel="61">TSan</button>
+            <button class="topcoat-button--large speroroads-bottom" id="62" hm-tap="triggerCustomOccurrenceSettings($event)" rel="62">GSum</button>
+            <button class="topcoat-button--large speroroads-bottom" id="63" hm-tap="triggerCustomOccurrenceSettings($event)" rel="63">Pass</button>
+            <button class="topcoat-button--large speroroads-bottom" id="64" hm-tap="newOcurrenceName($event)" rel="64">Nova</button>
             <button class="topcoat-button--large--cta--new speroroads-bottom" hm-tap="triggerStartRoute($event)"></button>
             <button class="topcoat-button--large--cta--save speroroads-bottom" hm-tap="saveRoute($event)"></button>
             <button class="topcoat-button--large--cta--settings speroroads-bottom" hm-tap="triggerRoadSettings($event)"></button>
-            <br>
           </form>
         </div>
       </div>
