@@ -13,7 +13,7 @@
       <div class="topcoat-list__container list-evaluation" style="max-height:730px;">
           <ul class="topcoat-list">
             <!-- order is reversed created timestamp -->
-            <li class="topcoat-list__item" hm-tap="newRoute($event)" style="text-align:center">++ New Route ++</li>
+            <li class="topcoat-list__item" hm-tap="routeName($event)" style="text-align:center">++ New Route ++</li>
             <li class="topcoat-list__item" hm-tap="openRoute($event,route.id)" ng-repeat="route in routes | orderBy: '-createddate'">
             {{ route.name }}
             <button hm-tap='delete(route.id)' style="float:right">Eliminar</button>
@@ -78,10 +78,14 @@
       </div>
 
 
-      <div class="row" id="custom-route" ng-show="custom_route_visibility">
+      <div class="row col-md-12 no-padding" id="custom-route" ng-show="custom_route_visibility">
         <div class="col-md-12">
           <h2>Nome da rota:</h2>
-            <input name="name" ng-model="route.name"></input>
+            <input name="name" id="routeName" ng-model="route.name"></input>
+            <div class="col-md-12 no-padding" style="margin-top:10px">
+              <button class="topcoat-button speroroads-bottom" hm-tap="newRoute($event)">Criar</button>
+              <button class="topcoat-button speroroads-bottom" hm-tap="cancelNewRoute($event)">Cancelar</button>
+            </div>
         </div>
       </div>
 
@@ -114,7 +118,7 @@
 
       <div class="row">
         <div class="col-md-3 no-padding" style="padding-right:10px;">
-          <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;" ng-show="!route_settings_visibility && !custom_settings_visibility && !new_name_visibility">
+          <div class="topcoat-list__container list-evaluation" id="listoccurrences" style="max-height:270px;" ng-show="!route_settings_visibility && !custom_settings_visibility && !new_name_visibility && !custom_route_visibility">
             <ul class="topcoat-list">
               <!-- order is reversed created timestamp -->
               <li class="topcoat-list__item" ng-show="!currentRoute">No route selected</li>

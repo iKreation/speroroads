@@ -23,6 +23,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentPriority = null;
   $scope.currentRouteSettings = null;
 
+
   // Data structures for the application
   // this structures define the current
   // state of the application
@@ -739,18 +740,44 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   };
 
 
+  $scope.routeName = function($event) {
+
+    $scope.custom_route_visibility = true;
+
+  }
+
+  $scope.cancelNewRoute = function($event) {
+
+    $scope.custom_route_visibility = false;
+  }
+
+
+
   /**
    * newRoute creates add's a new route to the current state of the app
    * @return void
    */
-  $scope.newRoute = function() {
+  $scope.newRoute = function(routeName) {
+
+    $scope.custom_route_visibility = false;
+
+
+    var newRouteName = document.getElementById("routeName").value;
+
+
 
     var dt = new Date();
     var route_id = dt;
     var buildDate = dt.getDate() + '/' + dt.getMonth() + '/' + dt.getFullYear() + ' ' + dt.getHours()  + ':' + dt.getMinutes();
+    if(newRouteName == "") {
+      newRouteName = buildDate;
+    }
+    else {
+      newRouteName += " " + dt.getDate() + '/' + dt.getMonth() + '/' + dt.getFullYear();
+    }
     var route = {
       id: dt.getTime(),
-      name: buildDate,
+      name: newRouteName,
       subRoutes : [],
       occurrences: [],
       options: {
