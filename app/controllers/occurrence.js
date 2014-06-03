@@ -313,7 +313,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
       // when starting a route, first sub route is the next element of the array
       route.subRoutes.push({'settings' : $scope.currentRouteSettings});
-      var lastIndex = route.subRoutes.length;
+      var lastIndex = route.subRoutes.length - 1;
       console.log("sub route");
       console.log(route.subRoutes);
       console.log("last index");
@@ -326,7 +326,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         function(position) {
           console.log(route.subRoutes);
           console.log(lastIndex);
-          //route.subRoutes[lastIndex].push(position);
+          route.subRoutes[lastIndex]['position'] = position;
         },
         function(error) {
           alert("erro a gravar a rota");
