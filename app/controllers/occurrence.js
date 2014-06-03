@@ -108,25 +108,25 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
   // type of occurrences, check with backend
   $scope.instances = {
-    '11' : {'name' : 'Rodeiras - Tipo 1',      'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
-    '12' : {'name' : 'Rodeiras - Tipo 2',      'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
-    '13' : {'name' : 'Rodeiras - Tipo 3',      'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+    '11' : {'name' : 'Rodeiras',      'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '12' : {'name' : 'Rodeiras',      'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '13' : {'name' : 'Rodeiras',      'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
 
-    '21' : {'name' : 'Fendilhamento - Tipo 1', 'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
-    '22' : {'name' : 'Fendilhamento - Tipo 2', 'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
-    '23' : {'name' : 'Fendilhamento - Tipo 3', 'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+    '21' : {'name' : 'Fendilhamento', 'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '22' : {'name' : 'Fendilhamento', 'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '23' : {'name' : 'Fendilhamento', 'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
 
-    '31' : {'name' : 'Peladas etc - Tipo 1',   'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
-    '32' : {'name' : 'Peladas etc - Tipo 2',   'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
-    '33' : {'name' : 'Peladas etc - Tipo 3',   'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+    '31' : {'name' : 'Peladas etc',   'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '32' : {'name' : 'Peladas etc',   'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '33' : {'name' : 'Peladas etc',   'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
 
-    '41' : {'name' : 'Covas - Tipo 1',         'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
-    '42' : {'name' : 'Covas - Tipo 2',         'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
-    '43' : {'name' : 'Covas - Tipo 3',         'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+    '41' : {'name' : 'Covas',         'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '42' : {'name' : 'Covas',         'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '43' : {'name' : 'Covas',         'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
 
-    '51' : {'name' : 'Reparações - Tipo 1',    'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
-    '52' : {'name' : 'Reparações - Tipo 2',    'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
-    '53' : {'name' : 'Reparações - Tipo 3',    'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
+    '51' : {'name' : 'Reparações',    'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
+    '52' : {'name' : 'Reparações',    'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
+    '53' : {'name' : 'Reparações',    'priority' : 3, 'watching' : false, 'points': [], 'watch_id': null},
 
     '61' : {'name' : 'Tampas Saneamento',      'priority' : null, 'watching' : false, 'points': [], 'watch_id': null},
     '62' : {'name' : 'Grelhas de sumidouros',  'priority' : null, 'watching' : false, 'points': [], 'watch_id': null},
@@ -232,9 +232,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       if ($scope.trackingIsActive()) {
 
         var watching = false;
-
         var occurrences = $scope.instances;
-
 
         for (var i in occurrences) {
 
@@ -271,15 +269,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
           emptySetting = true;
         }
 
-
-        if(emptySetting==false){
+        if(emptySetting==false) {
 
           button.removeClass('topcoat-button--large--cta--new');
           button.addClass('topcoat-button--large--cta--record');
           $scope.startRoute();
-        }
-
-        else{
+        } else{
           alert("Por favor defina todas as caracteristicas da via primeiro");
         }
     }
@@ -314,6 +309,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       // when starting a route, first sub route is the next element of the array
       var lastIndex = route.subRoutes.length;
       route.subRoutes[lastIndex] = [];
+      console.log($scope.currentRouteSettings);
       route.subRoutes[lastIndex]['settings'] = $scope.currentRouteSettings;
       $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
         function(position) {
@@ -334,7 +330,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.syncWithServer = function($event) {
 
     var route = $scope.getCurrentRoute();
-    console.log(JSON.stringify(route));
+    //console.log(JSON.stringify(route));
 
     $http.post('/someUrl', route).success($scope.successSync);
 
@@ -366,7 +362,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
         button = document.getElementById(id).className += ' topcoat-button--large--cta--red';
       }
       $scope.startPathOccurrence(id);
-    } 
+    }
 
     else {
       alert('You need to select or create a new route to add occurrences.');
@@ -395,12 +391,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       }
     }
 
-    else { 
+    else {
 
       button = document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
 
       $scope.stopsAndSavePathOccurrence(id);
-    
+
     }
 
 
@@ -417,7 +413,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       id = $event.target.attributes.rel.value;
 
       $scope.currentCustomId = id;
-    
+
     }
 
     else {
@@ -433,8 +429,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
 
       if($scope.trackingIsActive()) {
-      
-        
+
+
         $scope.custom_settings_visibility = true;
         $scope.new_name_visibility = false;
 
@@ -447,12 +443,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       }
     }
 
-    else { 
+    else {
 
       button = document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
 
       $scope.stopsAndSavePathOccurrence(id);
-    
+
     }
 
   }
@@ -481,7 +477,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     // set the previous values
     $scope.route_settings_visibility = false;
   };
- 
+
 
   /**
    * changeRoadSettings update the settings value of Road
@@ -582,7 +578,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       position : null,
       path : path,
       photos: [],
-      name: $scope.instances[id].name+type,
+      name: $scope.instances[id].name + type,
       createddate : new Date(),
       type: 'path'
     });
@@ -761,10 +757,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
     $scope.custom_route_visibility = false;
 
-
     var newRouteName = document.getElementById("routeName").value;
-
-
 
     var dt = new Date();
     var route_id = dt;
@@ -780,8 +773,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       name: newRouteName,
       subRoutes : [],
       occurrences: [],
-      options: {
-      }
+      options: {}
     };
 
 
