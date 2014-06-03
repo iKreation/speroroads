@@ -413,18 +413,22 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     var button;
     var id;
 
-    if ($scope.currentCustomId != 64) {
-      id = $event.target.attributes.rel.value;
+    id = $event.target.attributes.rel.value;
 
-      $scope.currentCustomId = id;
-    
+
+    if (id == 0) {
+      id = 64;    
     }
 
-    if ($scope.currentCustomId == 64) {
-      $scope.instances[$scope.currentCustomId].name = document.getElementById("occurrenceName").value;
+    $scope.currentCustomId = id;
+
+
+
+    if (id == 64) {
+      $scope.instances[id].name = document.getElementById("occurrenceName").value;
     }
 
-    if(!$scope.instances[$scope.currentCustomId].watching) {
+    if(!$scope.instances[id].watching) {
 
 
       if($scope.trackingIsActive()) {
@@ -444,9 +448,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
     else { 
 
-      document.getElementById($scope.currentCustomId).className = 'topcoat-button--large speroroads-bottom';
+      document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
 
-      $scope.stopsAndSavePathOccurrence($scope.currentCustomId);
+      $scope.stopsAndSavePathOccurrence(id);
     
     }
 
@@ -502,6 +506,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
    $scope.currentRouteSettings = routeSettings;
    $scope.closeRoadSettings($event);
+
+
   };
 
   /**
