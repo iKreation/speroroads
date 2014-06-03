@@ -420,16 +420,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     
     }
 
-    else {
-
-      id = 64;
+    if ($scope.currentCustomId == 64) {
+      $scope.instances[$scope.currentCustomId].name = document.getElementById("occurrenceName").value;
     }
 
-    if (id == 64) {
-      $scope.instances[id].name = document.getElementById("occurrenceName").value;
-    }
-
-    if(!$scope.instances[id].watching) {
+    if(!$scope.instances[$scope.currentCustomId].watching) {
 
 
       if($scope.trackingIsActive()) {
@@ -449,9 +444,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
     else { 
 
-      button = document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
+      document.getElementById($scope.currentCustomId).className = 'topcoat-button--large speroroads-bottom';
 
-      $scope.stopsAndSavePathOccurrence(id);
+      $scope.stopsAndSavePathOccurrence($scope.currentCustomId);
     
     }
 
@@ -560,7 +555,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
 
     else {
+
       type = ' - Tipo 3';
+
     }
     // stop watching
     navigator.geolocation.clearWatch($scope.instances[id].watch_id);
