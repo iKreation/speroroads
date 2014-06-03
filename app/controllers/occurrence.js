@@ -273,7 +273,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
 
           button.removeClass('topcoat-button--large--cta--new');
           button.addClass('topcoat-button--large--cta--record');
-          $scope.startRoute();
+          $scope.startRoute(null, false);
         } else{
           alert("Por favor defina todas as caracteristicas da via primeiro");
         }
@@ -297,42 +297,54 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
    * startRoute starts a new route enabling the main path
    * @param  Object event
    */
-  $scope.startRoute = function($event) {
+  $scope.startRoute = function($event, isSubRoute) {
     // gets the current selected route
     var route = $scope.getCurrentRoute();
 
-    if(!$scope.trackingIsActive()) {
+    if(!$scope.trackingIsActive() || isSubRoute) {
       // starts the watcher
-      alert("nova rota a gravar");
+      if(isSubRoute) {
+        alert("nova subrota");
+      } else {
+        alert("nova rota a gravar");
+      }
+
       var options = { timeout: 30000, enableHighAccuracy: true };
 
       // when starting a route, first sub route is the next element of the array
+      route.subRoutes.push({'settings' : $scope.currentRouteSettings});
       var lastIndex = route.subRoutes.length;
-      route.subRoutes[lastIndex] = [];
+      console.log("sub route");
+      console.log(route.subRoutes);
+      console.log("last index");
+      console.log(lastIndex);
+      console.log("subroute settings");
       console.log($scope.currentRouteSettings);
-      route.subRoutes[lastIndex]['settings'] = $scope.currentRouteSettings;
+      navigator.geolocation.clearWatch($scope.currentRouteWatcher);
+
       $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
         function(position) {
-          route.subRoutes[lastIndex].push(position);
+          console.log(route.subRoutes);
+          console.log(lastIndex);
+          //route.subRoutes[lastIndex].push(position);
         },
         function(error) {
           alert("erro a gravar a rota");
         },
       options);
-    }
-
-    else {
+    } else {
       alert("Erro - Tem uma rota ativa");
     }
   };
 
-
   $scope.syncWithServer = function($event) {
 
     var route = $scope.getCurrentRoute();
+    console.log("syncing");
+    console.log(route);
     //console.log(JSON.stringify(route));
 
-    $http.post('/someUrl', route).success($scope.successSync);
+    //$http.post('/someUrl', route).success($scope.successSync);
 
   };
 
@@ -486,7 +498,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.changeRoadSettings = function($event) {
     /*working, this really update things*/
 
-   alert('Características da via alteradas');
+    alert('Características da via alteradas');
 
     $scope.settings_pav;
     $scope.settings_bermas;
@@ -494,15 +506,19 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     $scope.settings_nrvias;
     $scope.settings_largura_pavimento;
 
-
-   var routeSettings = [$scope.settings_pav,
+    var routeSettings = [$scope.settings_pav,
                         $scope.settings_bermas,
                         $scope.settings_largura_berma,
                         $scope.settings_nrvias,
                         $scope.settings_largura_pavimento];
 
-   $scope.currentRouteSettings = routeSettings;
-   $scope.closeRoadSettings($event);
+    $scope.currentRouteSettings = routeSettings;
+    $scope.closeRoadSettings($event);
+
+    if ($scope.currentRouteWatcher) {
+      $scope.startRoute(null, true);
+    }
+
   };
 
   /**
