@@ -333,19 +333,35 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     }
   };
 
+
+  $scope.cleanRequestObject = function(obj) {
+    delete obj['$$hashKey'];
+
+    for (var occ in obj['occurrences']) {
+      delete obj['occurrences'][occ]['$$hashKey'];
+    }
+
+    return obj;
+  }
+
   $scope.syncWithServer = function() {
 
     var route = $scope.getCurrentRoute();
     console.log("syncing");
-    console.log(route);
 
-    $http({method: 'GET', url: 'http://localhost:8000/speroroadapp/0/'}).
+    //var toSend = {'route' : $scope.cleanupAngularObject(route)};
+    var toSend = $scope.cleanRequestObject(route);
+    console.log(toSend);
+
+    delete $http.defaults.headers.common['X-Requested-With'];
+
+    $http({method: 'POST', url: 'http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/', data: {route: toSend}}).
       success(function(data, status, headers, config) {
         console.log(data);
         console.log("success");
     }).
       error(function(data, status, headers, config) {
-        console.log("failed");
+        alert("failed");
     });
   };
 
