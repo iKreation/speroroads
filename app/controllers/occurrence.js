@@ -10,7 +10,7 @@ document.addEventListener("deviceready", function() {
 var occurrenceApp = angular.module('occurrenceApp',
                                   ['OccurrenceModel', 'hmTouchevents']);
 
-occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
+occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   // Will rotate to every direction
   steroids.view.setAllowedRotations([0,180,-90,90]);
 
@@ -21,7 +21,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentOccurrence = null;
   $scope.currentCustomId = null;
   $scope.currentPriority = null;
-  $scope.currentRouteSettings = null;
 
 
   // Data structures for the application
@@ -32,6 +31,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
   $scope.currentOccurrences = [];
   $scope.currentMarker = null;
   $scope.currentPolyline = null;
+
+  $scope.currentRouteSettings = ["blocosbetao","True",6,"7",9];
 
   // form values
   $scope.settingsPavimento = [
@@ -314,19 +315,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
       // when starting a route, first sub route is the next element of the array
       route.subRoutes.push({'settings' : $scope.currentRouteSettings});
       var lastIndex = route.subRoutes.length - 1;
-      console.log("sub route");
-      console.log(route.subRoutes);
-      console.log("last index");
-      console.log(lastIndex);
-      console.log("subroute settings");
-      console.log($scope.currentRouteSettings);
+
+
+      route.subRoutes[lastIndex]['position'] = [];
       navigator.geolocation.clearWatch($scope.currentRouteWatcher);
 
       $scope.currentRouteWatcher = navigator.geolocation.watchPosition(
         function(position) {
-          console.log(route.subRoutes);
-          console.log(lastIndex);
-          route.subRoutes[lastIndex]['position'] = position;
+          route.subRoutes[lastIndex]['position'].push(position);
         },
         function(error) {
           alert("erro a gravar a rota");
@@ -337,21 +333,21 @@ occurrenceApp.controller('IndexCtrl', function ($scope, Occurrence) {
     }
   };
 
-  $scope.syncWithServer = function($event) {
+  $scope.syncWithServer = function() {
 
     var route = $scope.getCurrentRoute();
     console.log("syncing");
     console.log(route);
-    //console.log(JSON.stringify(route));
 
-    //$http.post('/someUrl', route).success($scope.successSync);
-
+    $http({method: 'GET', url: 'http://localhost:8000/speroroadapp/0/'}).
+      success(function(data, status, headers, config) {
+        console.log(data);
+        console.log("success");
+    }).
+      error(function(data, status, headers, config) {
+        console.log("failed");
+    });
   };
-
-  $scope.successSync = function($resp) {
-
-  };
-
 
   $scope.startCustomRoute = function($event) {
 
