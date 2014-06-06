@@ -355,13 +355,15 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
     delete $http.defaults.headers.common['X-Requested-With'];
 
+    console.log($http.defaults.headers);
     $http({method: 'POST', url: 'http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/', data: {route: toSend}}).
       success(function(data, status, headers, config) {
+        console.log(headers);
         console.log(data);
-        console.log("success");
+        alert("Sincronizado com sucesso.");
     }).
       error(function(data, status, headers, config) {
-        alert("failed");
+        alert("Falhou a sincronização. Tente novamente.");
     });
   };
 
