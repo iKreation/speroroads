@@ -437,17 +437,16 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     var button;
     var id;
 
-    if ($scope.currentCustomId != 64) {
-      id = $event.target.attributes.rel.value;
+    id = $event.target.attributes.rel.value;
 
-      $scope.currentCustomId = id;
 
+    if (id == 0) {
+      id = 64;    
     }
 
-    else {
+    $scope.currentCustomId = id;
 
-      id = 64;
-    }
+
 
     if (id == 64) {
       $scope.instances[id].name = document.getElementById("occurrenceName").value;
@@ -473,7 +472,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
     else {
 
-      button = document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
+      document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
 
       $scope.stopsAndSavePathOccurrence(id);
 
@@ -588,7 +587,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     }
 
     else {
+
       type = ' - Tipo 3';
+
     }
     // stop watching
     navigator.geolocation.clearWatch($scope.instances[id].watch_id);

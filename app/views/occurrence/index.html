@@ -94,7 +94,7 @@
         <h3>Nome da nova patologia:</h3>
         <input id="occurrenceName" ng-model="settings_custom"></>
         <div class="col-md-12 no-padding" style="margin-top:10px">
-            <button class="topcoat-button speroroads-bottom" hm-tap="triggerCustomOccurrenceSettings($event)">Continuar</button>
+            <button class="topcoat-button speroroads-bottom" rel ="0" hm-tap="triggerCustomOccurrenceSettings($event)">Continuar</button>
             <button class="topcoat-button speroroads-bottom" hm-tap="cancelNewNameOccurrence($event)">Cancelar</button>
         </div>
       </div>
@@ -145,13 +145,13 @@
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="51">Rep1</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="52">Rep2</button>
             <button class="topcoat-button--large speroroads-bottom" hm-tap="triggerPathOcc($event)" rel="53">Rep3</button>
-            <button class="topcoat-button--large speroroads-bottom" id="61" hm-tap="triggerCustomOccurrenceSettings($event)" rel="61">TSan</button>
+            <button class="topcoat-button--large speroroads-bottom" style="margin-left:96px" id="61" hm-tap="triggerCustomOccurrenceSettings($event)" rel="61">TSan</button>
             <button class="topcoat-button--large speroroads-bottom" id="62" hm-tap="triggerCustomOccurrenceSettings($event)" rel="62">GSum</button>
-            <button class="topcoat-button--large speroroads-bottom" id="63" hm-tap="triggerCustomOccurrenceSettings($event)" rel="63">Pass</button>
-            <button class="topcoat-button--large speroroads-bottom" id="64" hm-tap="newOcurrenceName($event)" rel="64">Nova</button>
             <button class="topcoat-button--large--cta--new speroroads-bottom" hm-tap="triggerStartRoute($event)"></button>
             <button class="topcoat-button--large--cta--save speroroads-bottom" hm-tap="saveRoute($event)"></button>
             <button class="topcoat-button--large--cta--settings speroroads-bottom" hm-tap="triggerRoadSettings($event)"></button>
+            <button class="topcoat-button--large speroroads-bottom" style="margin-left:96px" id="63" hm-tap="triggerCustomOccurrenceSettings($event)" rel="63">Pass</button>
+            <button class="topcoat-button--large speroroads-bottom" id="64" hm-tap="newOcurrenceName($event)" rel="64">Nova</button>
           </form>
         </div>
       </div>
