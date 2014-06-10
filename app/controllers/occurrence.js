@@ -10,6 +10,8 @@ document.addEventListener("deviceready", function() {
 var occurrenceApp = angular.module('occurrenceApp',
                                   ['OccurrenceModel', 'hmTouchevents']);
 
+
+
 occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   // Will rotate to every direction
   steroids.view.setAllowedRotations([0,180,-90,90]);
@@ -347,24 +349,24 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   $scope.syncWithServer = function() {
 
     var route = $scope.getCurrentRoute();
+
     console.log("syncing");
 
-    //var toSend = {'route' : $scope.cleanupAngularObject(route)};
     var toSend = $scope.cleanRequestObject(route);
+
     console.log(toSend);
 
-    delete $http.defaults.headers.common['X-Requested-With'];
-
-    console.log($http.defaults.headers);
-    $http({method: 'POST', url: 'http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/', data: {route: toSend}}).
-      success(function(data, status, headers, config) {
-        console.log(headers);
-        console.log(data);
-        alert("Sincronizado com sucesso.");
-    }).
-      error(function(data, status, headers, config) {
-        alert("Falhou a sincronização. Tente novamente.");
-    });
+    $.post( "http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/", { route: JSON.stringify(toSend) }, function( data ) {
+      console.log("Data " + JSON.stringify(data));
+      if (data.success) {
+        $scope.getCurrentRoute()._id = data.route_id;
+        console.log(JSON.stringify($scope.routes));
+        alert(data.msg);
+      }
+      else{
+        alert("Sync Failed");
+      }
+    }, "json");
   };
 
   $scope.startCustomRoute = function($event) {
