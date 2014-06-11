@@ -316,7 +316,7 @@ limitations under the License.
 .topcoat-button--large--cta--record {
   border: 1px solid #143250;
   background-color: red;
-  background-image: url('Record-Normal-icon.png');
+  background-image: url('white-square.png');
   background-repeat: no-repeat;
   background-position: center;
   background-size: 40%;
@@ -775,6 +775,7 @@ limitations under the License.
   padding: 1.25rem;
   border-top: 1px solid #eff1f1;
   border-bottom: 1px solid #bcbfbf;
+  font-weight: bold;
   
 }
 
