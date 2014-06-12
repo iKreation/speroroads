@@ -352,6 +352,39 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     return obj;
   }
 
+
+
+ $scope.win = function (r) {
+    console.log("Code = " + r.responseCode);
+    console.log("Response = " + r.response);
+    console.log("Sent = " + r.bytesSent);
+  }
+
+  $scope.fail = function (error) {
+    alert("An error has occurred: Code = " + error.code);
+    console.log("upload error source " + error.source);
+    console.log("upload error target " + error.target);
+  }
+
+  $scope.syncPhotos = function(file,id) {
+
+  
+    var options = new FileUploadOptions();
+    options.fileKey = "file";
+    options.fileName = file.substr(file.lastIndexOf('/') + 1);
+    options.mimeType = "text/plain";
+
+    var params = {};
+    params.id = id;
+    params. = "param";
+
+    options.params = params;
+
+    var ft = new FileTransfer();
+    ft.upload(file, encodeURI("http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/"), win, fail, options);
+
+  };
+
   $scope.syncWithServer = function() {
 
     var route = $scope.getCurrentRoute();
@@ -373,6 +406,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
         alert("Sync Failed");
       }
     }, "json");
+
+    for (var i in $scope.currentOccurrences) {
+      for (var j in $scope.currentOccurrences[i].photos) {
+        var file = $scope.currentOccurrences[i].photos[j];
+          $scope.syncPhotos(file,$scope.currentOccurrences[i].id);
+      }
+
+    }
   };
 
   $scope.startCustomRoute = function($event) {
