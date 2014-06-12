@@ -109,7 +109,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     {id:'15',name:'15'}
   ];
 
-  // type of occurrences, check with backend
+  // type of occurrences, check with backendnr_
   $scope.instances = {
     '11' : {'name' : 'Rodeiras',      'priority' : 1, 'watching' : false, 'points': [], 'watch_id': null},
     '12' : {'name' : 'Rodeiras',      'priority' : 2, 'watching' : false, 'points': [], 'watch_id': null},
@@ -183,7 +183,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
       $scope.currentOccurrence['photos'].push(imagePath);
 
-      alert($scope.currentOccurrence['photos'].length);
+      for(var i = 0; i< $scope.currentOccurrences.length; i++){
+        if($scope.currentOccurrences[i].id == $scope.currentOccurrence.id){
+          $scope.currentOccurrences[i].nr_photos +=1;
+          $scope.$apply();
+        }
+      }
+
 
       return window.resolveLocalFileSystemURI(targetDirURI, function(directory) {
         return file.moveTo(directory, fileName, fileMoved, $scope.fileError);
@@ -595,6 +601,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     navigator.geolocation.clearWatch($scope.instances[id].watch_id);
     $scope.instances[id].watch_id = null;
 
+
     // draw the line
     var path = [];
     var pathObject = $scope.instances[id].points;
@@ -604,6 +611,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     for(var p in pathObject) {
       path.push([pathObject[p].coords.latitude, pathObject[p].coords.longitude]);
     }
+
+
     // save the occurrence
     $scope.addOccurrence({
       id : new Date().getTime(),
@@ -612,6 +621,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
       path : path,
       photos: [],
       name: $scope.instances[id].name + type,
+      nr_photos: 0,
+      priority: $scope.instances[id].priority,
       createddate : new Date(),
       type: 'path'
     });
@@ -619,17 +630,18 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     /* refresh */
     $scope.$apply();
 
+
     var lineColor;
 
     if ($scope.instances[id].priority==1) {
-            lineColor='yellow';
-          }
-          else if($scope.instances[id].priority==2){
-            lineColor='orange';
-          }
-          else{
-            lineColor='red';
-          }
+      lineColor='yellow';
+    }
+    else if($scope.instances[id].priority==2){
+      lineColor='orange';
+    }
+    else{
+      lineColor='red';
+    }
 
     $scope.currentPolyline = L.polyline(path, {color: lineColor}).addTo(map);
     // zoom the map to the polyline
@@ -865,16 +877,38 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
    * openOccurrence Displays the occurrence info, and shows it on the map
    * @param  int id the occurrence id
    */
-  $scope.openOccurrence = function(id) {
+  $scope.openOccurrence = function($event,id) {
 
     $scope.clearLayers();
 
     // find it
 
+    var selectedOccurrence = angular.element($event.target);
+
+    selectedOccurrence.parent().children().removeClass('topcoat-list__item__selected');
+
+    selectedOccurrence.addClass('topcoat-list__item__selected');
+
+   
+
+
     for(var o in $scope.currentOccurrences) {
       if(parseInt($scope.currentOccurrences[o].id) == parseInt(id)) {
 
         $scope.currentOccurrence = $scope.currentOccurrences[o];
+
+        var lineColor;
+
+        if ($scope.currentOccurrence.priority==1) {
+          lineColor='yellow';
+        }
+        else if($scope.currentOccurrence.priority==2){
+          lineColor='orange';
+        }
+        else{
+          lineColor='red';
+        }
+
 
         // check the type
         if($scope.currentOccurrences[o].type == 'single') {
@@ -885,7 +919,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
         } else {
 
           var path = $scope.currentOccurrences[o].path;
-          $scope.currentPolyline = L.polyline(path, {color: 'red'}).addTo(map);
+          $scope.currentPolyline = L.polyline(path, {color: lineColor}).addTo(map);
           // zoom the map to the polyline
           map.fitBounds($scope.currentPolyline.getBounds());
         }
