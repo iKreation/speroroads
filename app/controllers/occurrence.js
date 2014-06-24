@@ -17,6 +17,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   steroids.view.setAllowedRotations([0,180,-90,90]);
 
   // Route states
+  $scope.currentRoutePosition = null;
   $scope.currentRoute = null;
   $scope.currentRouteWatcher = null;
   $scope.currentSubRoute = {'settings': []};
@@ -181,7 +182,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
       /*Complete image path*/
       var imagePath = targetDirURI+fileName;
 
-      $scope.currentOccurrence['photos'].push(imagePath);
+      var photo = {'file': imagePath, 'position': $scope.currentRoutePosition};
+
+      $scope.currentOccurrence['photos'].push(photo);
 
       for(var i = 0; i< $scope.currentOccurrences.length; i++){
         if($scope.currentOccurrences[i].id == $scope.currentOccurrence.id){
@@ -352,6 +355,38 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     return obj;
   }
 
+
+
+ $scope.win = function (r) {
+    console.log("Code = " + r.responseCode);
+    console.log("Response = " + r.response);
+    console.log("Sent = " + r.bytesSent);
+  }
+
+  $scope.fail = function (error) {
+    alert("An error has occurred: Code = " + error.code);
+    console.log("upload error source " + error.source);
+    console.log("upload error target " + error.target);
+  }
+
+  $scope.syncPhotos = function(file,id,pos) {
+
+  
+    var options = new FileUploadOptions();
+    options.fileKey = "file";
+    options.fileName = file.substr(file.lastIndexOf('/') + 1);
+    options.mimeType = "text/plain";
+
+    var params = {};
+    params.id = id;
+    params.pos = pos;
+    options.params = params;
+
+    var ft = new FileTransfer();
+    ft.upload(file, encodeURI("http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/"), win, fail, options);
+
+  };
+
   $scope.syncWithServer = function() {
 
     var route = $scope.getCurrentRoute();
@@ -373,6 +408,15 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
         alert("Sync Failed");
       }
     }, "json");
+
+    for (var i in $scope.currentOccurrences) {
+      for (var j in $scope.currentOccurrences[i].photos) {
+        var file = $scope.currentOccurrences[i].photos[j];
+        var pos = $scope.currentOccurrences[i].photos[j].position;
+          $scope.syncPhotos(file,$scope.currentOccurrences[i].id,pos);
+      }
+
+    }
   };
 
   $scope.startCustomRoute = function($event) {
@@ -554,11 +598,48 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     // starts the watcher
     var options = { timeout: 30000, enableHighAccuracy: true };
 
+
+    var type;
+
+    if ($scope.instances[id].priority == 1) {
+
+      type = ' - Tipo 1';
+
+    }
+
+    else if ($scope.instances[id].priority == 2) {
+      type = ' - Tipo 2';
+    }
+
+    else {
+
+      type = ' - Tipo 3';
+
+    }
+
+
+    // save the occurrence
+    $scope.addOccurrence({
+      id : new Date().getTime(),
+      instance_id : id,
+      position : null,
+      path : [],
+      photos: [],
+      name: $scope.instances[id].name + " " + type,
+      nr_photos: 0,
+      priority: $scope.instances[id].priority,
+      createddate : new Date(),
+      type: 'path'
+    });
+
+
+
     $scope.instances[id].watch_id = navigator.geolocation.watchPosition(
       function(position) {
         // remove the last one
         $scope.clearLayers();
         var pos = [position.coords.latitude, position.coords.longitude];
+        $scope.currentRoutePosition = pos;
         $scope.currentMarker = L.marker(pos).addTo(map);
         // for every location update add the point to the
         // updated state of the instance object
@@ -580,23 +661,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     // updates the flag
     $scope.instances[id].watching = false;
 
-    var type;
-
-    if ($scope.instances[id].priority == 1) {
-
-      type = ' - Tipo 1';
-
-    }
-
-    else if ($scope.instances[id].priority == 2) {
-      type = ' - Tipo 2';
-    }
-
-    else {
-
-      type = ' - Tipo 3';
-
-    }
+    
     // stop watching
     navigator.geolocation.clearWatch($scope.instances[id].watch_id);
     $scope.instances[id].watch_id = null;
@@ -612,21 +677,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
       path.push([pathObject[p].coords.latitude, pathObject[p].coords.longitude]);
     }
 
+   for(var i = 0; i< $scope.currentOccurrences.length; i++){
+      if($scope.currentOccurrences[i].instance_id == id){
+        $scope.currentOccurrences[i].path = path;
+      }
+    }
 
-    // save the occurrence
-    $scope.addOccurrence({
-      id : new Date().getTime(),
-      instance_id : id,
-      position : null,
-      path : path,
-      photos: [],
-      name: $scope.instances[id].name + type,
-      nr_photos: 0,
-      priority: $scope.instances[id].priority,
-      createddate : new Date(),
-      type: 'path'
-    });
-
+    
     /* refresh */
     $scope.$apply();
 
