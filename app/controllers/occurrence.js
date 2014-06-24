@@ -178,6 +178,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     steroids.on("ready", function() {
       var fileName, targetDirURI;
       targetDirURI = "file://" + steroids.app.absoluteUserFilesPath;
+      alert("target " + targetDirURI);
       fileName = String(new Date().getTime()) + ".jpeg";
       /*Complete image path*/
       var imagePath = targetDirURI+fileName;
@@ -199,6 +200,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
       }, $scope.fileError);
     });
     return fileMoved = function(file) {
+
+      alert("fileMoved " + file);
 
       alert("Foto associada a patologia.");
 
@@ -358,12 +361,14 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
 
  $scope.win = function (r) {
+    alert("uploaded");
     console.log("Code = " + r.responseCode);
     console.log("Response = " + r.response);
     console.log("Sent = " + r.bytesSent);
   }
 
   $scope.fail = function (error) {
+    alert("failed");
     alert("An error has occurred: Code = " + error.code);
     console.log("upload error source " + error.source);
     console.log("upload error target " + error.target);
@@ -371,20 +376,35 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
   $scope.syncPhotos = function(file,id,pos) {
 
-  
+
     var options = new FileUploadOptions();
     options.fileKey = "file";
-    options.fileName = file.substr(file.lastIndexOf('/') + 1);
-    options.mimeType = "text/plain";
+    //options.fileName = file.substr(file.lastIndexOf('/') + 1);
+    options.mimeType = "image/jpeg";
 
     var params = {};
-    params.id = id;
+    params.occ_id = id;
+    params.route_id = $scope.getCurrentRoute()._id;
     params.pos = pos;
+
     options.params = params;
 
     var ft = new FileTransfer();
-    ft.upload(file, encodeURI("http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/"), win, fail, options);
+    alert("uploading");
 
+    ft.upload(file, encodeURI("http://radiant-bayou-7646.herokuapp.com/upload/0/"),
+    function(r) {
+      alert("uploaded");
+      console.log("Code = " + r.responseCode);
+      console.log("Response = " + r.response);
+      console.log("Sent = " + r.bytesSent);
+    },
+    function (error) {
+      alert("failed");
+      alert("An error has occurred: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      console.log("upload error target " + error.target);
+    }, true, options);
   };
 
   $scope.syncWithServer = function() {
@@ -411,7 +431,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
     for (var i in $scope.currentOccurrences) {
       for (var j in $scope.currentOccurrences[i].photos) {
-        var file = $scope.currentOccurrences[i].photos[j];
+        var file = $scope.currentOccurrences[i].photos[j].file;
+        alert("file " + JSON.stringify(file));
         var pos = $scope.currentOccurrences[i].photos[j].position;
           $scope.syncPhotos(file,$scope.currentOccurrences[i].id,pos);
       }
@@ -1068,7 +1089,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   syncButton.onTap = function() {
 
     if($scope.getCurrentRoute() != false) {
-      $scope.syncWithServer();
+
+      if(!$scope.trackingIsActive()){
+        $scope.syncWithServer();
+      }
+      else {
+        alert("Por favor termine a rota antes de sincronizar");
+      }
     } else {
       alert("Por favor seleccione uma rota primeiro");
     }
