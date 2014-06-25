@@ -178,10 +178,9 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     steroids.on("ready", function() {
       var fileName, targetDirURI;
       targetDirURI = "file://" + steroids.app.absoluteUserFilesPath;
-      alert("target " + targetDirURI);
       fileName = String(new Date().getTime()) + ".jpeg";
       /*Complete image path*/
-      var imagePath = targetDirURI+fileName;
+      var imagePath = targetDirURI+"/"+fileName;
 
       var photo = {'file': imagePath, 'position': $scope.currentRoutePosition};
 
@@ -201,7 +200,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     });
     return fileMoved = function(file) {
 
-      alert("fileMoved " + file);
 
       alert("Foto associada a patologia.");
 
@@ -359,27 +357,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   }
 
 
-
- $scope.win = function (r) {
-    alert("uploaded");
-    console.log("Code = " + r.responseCode);
-    console.log("Response = " + r.response);
-    console.log("Sent = " + r.bytesSent);
-  }
-
-  $scope.fail = function (error) {
-    alert("failed");
-    alert("An error has occurred: Code = " + error.code);
-    console.log("upload error source " + error.source);
-    console.log("upload error target " + error.target);
-  }
-
   $scope.syncPhotos = function(file,id,pos) {
 
+    //var test = "file://localhost/images/Control-Panel.png";
 
     var options = new FileUploadOptions();
     options.fileKey = "file";
-    //options.fileName = file.substr(file.lastIndexOf('/') + 1);
+    options.fileName = "fotuxa.jpeg";
     options.mimeType = "image/jpeg";
 
     var params = {};
@@ -389,29 +373,29 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
     options.params = params;
 
+  
+
     var ft = new FileTransfer();
-    alert("uploading");
 
     ft.upload(file, encodeURI("http://radiant-bayou-7646.herokuapp.com/upload/0/"),
     function(r) {
-      alert("uploaded");
+      alert("Photos uploaded");
       console.log("Code = " + r.responseCode);
       console.log("Response = " + r.response);
       console.log("Sent = " + r.bytesSent);
     },
     function (error) {
-      alert("failed");
+      alert("Photo upload failed");
       alert("An error has occurred: Code = " + error.code);
       console.log("upload error source " + error.source);
       console.log("upload error target " + error.target);
-    }, true, options);
+    }, options);
   };
 
   $scope.syncWithServer = function() {
 
     var route = $scope.getCurrentRoute();
-
-    console.log("syncing");
+    var newID;
 
     var toSend = $scope.cleanRequestObject(route);
 
@@ -421,23 +405,30 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
       console.log("Data " + JSON.stringify(data));
       if (data.success) {
         $scope.getCurrentRoute()._id = data.route_id;
+        newID = data.route_id;
         console.log(JSON.stringify($scope.routes));
-        alert(data.msg);
+
+        for (var i in $scope.routes) {
+
+          if($scope.routes[i]._id == newID){
+
+            var occurrences = $scope.routes[i].occurrences;
+
+            for (var j in occurrences) {
+
+              for(var ph in occurrences[j].photos){
+                var file = occurrences[j].photos[ph].file;
+                var pos = occurrences[j].photos[ph].position;
+                $scope.syncPhotos(file,occurrences[j].id,pos);
+              }
+            }
+          }
+        }
       }
       else{
         alert("Sync Failed");
       }
-    }, "json");
-
-    for (var i in $scope.currentOccurrences) {
-      for (var j in $scope.currentOccurrences[i].photos) {
-        var file = $scope.currentOccurrences[i].photos[j].file;
-        alert("file " + JSON.stringify(file));
-        var pos = $scope.currentOccurrences[i].photos[j].position;
-          $scope.syncPhotos(file,$scope.currentOccurrences[i].id,pos);
-      }
-
-    }
+    }, "json");  
   };
 
   $scope.startCustomRoute = function($event) {
