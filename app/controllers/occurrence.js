@@ -404,6 +404,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     $.post( "http://radiant-bayou-7646.herokuapp.com/speroroadapp/0/", { route: JSON.stringify(toSend) }, function( data ) {
       console.log("Data " + JSON.stringify(data));
       if (data.success) {
+        alert("Route synced with server");
         $scope.getCurrentRoute()._id = data.route_id;
         newID = data.route_id;
         console.log(JSON.stringify($scope.routes));
@@ -442,16 +443,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
       var id = $scope.currentCustomId;
 
-      if ($scope.instances[id].priority==1) {
-        button = document.getElementById(id).className += ' topcoat-button--large--cta--yellow';
-      }
-      else if($scope.instances[id].priority==2){
-        button = document.getElementById(id).className += ' topcoat-button--large--cta--orange';
-      }
-      else{
-        button = document.getElementById(id).className += ' topcoat-button--large--cta--red';
-      }
-      $scope.startPathOccurrence(id);
+      $scope.saveSingleOccurrence(id);
     }
 
     else {
@@ -480,16 +472,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
         alert("Tem que ter a rota iniciada para registar ocorrências.");
       }
     }
-
-    else {
-
-      button = document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
-
-      $scope.stopsAndSavePathOccurrence(id);
-
-    }
-
-
   }
 
 
@@ -531,15 +513,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
       }
     }
-
-    else {
-
-      document.getElementById(id).className = 'topcoat-button--large speroroads-bottom';
-
-      $scope.stopsAndSavePathOccurrence(id);
-
-    }
-
   }
 
   $scope.cancelNewNameOccurrence = function($event){
@@ -779,9 +752,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
    * @param  Object $event same as above
    * @return void change the state of the app
    */
-  $scope.saveSingleOccurrence = function($event) {
+  $scope.saveSingleOccurrence = function(id) {
     if($scope.trackingIsActive()) {
-      var id = $event.target.attributes.rel.value;
       if ($scope.currentRoute) {
         navigator.geolocation.getCurrentPosition(function(position) {
           // clear markers if they exist
@@ -789,7 +761,31 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
           var pos = [position.coords.latitude, position.coords.longitude];
           /* create layer to easily remove marker */
-          $scope.currentMarker = L.marker(pos).addTo(map);
+
+
+
+          var type;
+
+
+          if ($scope.instances[id].priority == 1) {
+
+            type = ' - Tipo 1';
+            $scope.currentMarker = L.marker(pos,map,{icon:'localhost/images/yellow_Marker.png'}).addTo(map);
+
+
+          }
+
+          else if ($scope.instances[id].priority == 2) {
+            type = ' - Tipo 2';
+            $scope.currentMarker = L.marker(pos,map,'/images/orange_Marker.png').addTo(map);
+
+          }
+
+          else {
+
+            type = ' - Tipo 3';
+            $scope.currentMarker = L.marker(pos,map,'/images/red_Marker.png').addTo(map);
+          }
 
           //$scope.occ.push(occurrence);
           $scope.addOccurrence({
@@ -797,7 +793,10 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
             instance_id : id,
             position : position,
             path : null,
-            name: $scope.instances[id].name,
+            photos: [],
+            nr_photos: 0,
+            priority: $scope.instances[id].priority,
+            name: $scope.instances[id].name + " " + type,
             createddate : new Date(),
             type: 'single',
           });
@@ -1045,8 +1044,20 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     var selectedRoute = angular.element($event.target);
 
 
+
+
     selectedRoute.parent().children().removeClass('topcoat-list__item__selected');
     selectedRoute.addClass('topcoat-list__item__selected');
+
+    var route = $scope.getCurrentRoute();
+
+    $("#photosDiv").html("");
+
+    for(var occ in route.occurrences){
+      for(var ph in route.occurrences[occ].photos){
+        $("#photosDiv").append("<img src=data:image/jpeg;base64,'"+route.occurrences[occ].photos[ph].file+"' style='width:100%;'");
+      }
+    }
 
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
