@@ -35,7 +35,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   $scope.currentMarker = null;
   $scope.currentPolyline = null;
 
-  $scope.currentRouteSettings = ["blocosbetao","True",6,"7",9];
+  $scope.currentRouteSettings = {
+                                'pavimento':null,
+                                'bermas': null,
+                                'largura_berma':null,
+                                'nr_vias':null,
+                                'largura_pavimento':null};
 
   // form values
   $scope.settingsPavimento = [
@@ -152,7 +157,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     console.log(" Take picture.");
     navigator.camera.getPicture($scope.imageUriReceived, function(message) {
         setTimeout(function() {
-            alert(message);
         }, 100);
     }, {
         quality: 25,
@@ -363,7 +367,7 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
     var options = new FileUploadOptions();
     options.fileKey = "file";
-    options.fileName = "fotuxa.jpeg";
+    options.fileName = "photo.jpeg";
     options.mimeType = "image/jpeg";
 
     var params = {};
@@ -562,7 +566,13 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
                         $scope.settings_nrvias,
                         $scope.settings_largura_pavimento];
 
-    $scope.currentRouteSettings = routeSettings;
+    $scope.currentRouteSettings['pavimento'] = routeSettings[0];
+    $scope.currentRouteSettings['bermas'] = routeSettings[1];
+    $scope.currentRouteSettings['largura_berma'] = routeSettings[2];
+    $scope.currentRouteSettings['nr_vias'] = routeSettings[3];
+    $scope.currentRouteSettings['largura_pavimento'] = routeSettings[4];
+
+
     $scope.closeRoadSettings($event);
 
     if ($scope.currentRouteWatcher) {
@@ -770,21 +780,21 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
           if ($scope.instances[id].priority == 1) {
 
             type = ' - Tipo 1';
-            $scope.currentMarker = L.marker(pos,map,{icon:'localhost/images/yellow_Marker.png'}).addTo(map);
+            //$scope.currentMarker = L.marker(pos,map,{icon:'localhost/images/yellow_Marker.png'}).addTo(map);
 
 
           }
 
           else if ($scope.instances[id].priority == 2) {
             type = ' - Tipo 2';
-            $scope.currentMarker = L.marker(pos,map,'/images/orange_Marker.png').addTo(map);
+            //$scope.currentMarker = L.marker(pos,map,'/images/orange_Marker.png').addTo(map);
 
           }
 
           else {
 
             type = ' - Tipo 3';
-            $scope.currentMarker = L.marker(pos,map,'/images/red_Marker.png').addTo(map);
+            //$scope.currentMarker = L.marker(pos,map,'/images/red_Marker.png').addTo(map);
           }
 
           //$scope.occ.push(occurrence);
@@ -1031,20 +1041,41 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
    * open Route
    * @param  int id route ID
    */
+
+  $scope.getPhoto = function(source) {
+
+    alert("getPhoto");
+    // Retrieve image file location from specified source
+    navigator.camera.getPicture($scope.onPhotoURISuccess, $scope.onFail, { quality: 50, 
+      destinationType: destinationType.FILE_URI,
+      sourceType: source });
+  }
+
+
+  // Called if something bad happens.
+  // 
+  $scope.onFail = function(message) {
+    alert('Failed because: ' + message);
+  }
+
+  // Called when a photo is successfully retrieved
+  //
+  $scope.onPhotoURISuccess = function(imageData) {
+    // Uncomment to view the base64 encoded image data
+    // console.log(imageData);
+    $("#photosDiv").append("<img src='"+imageData+"' style='display:block';'width:100%;'");
+    alert("photoAdded");
+  }
+
   $scope.openRoute = function($event,id) {
     // only allow to change the route if there is no gps tracking active
-
 
     if($scope.trackingIsActive()) {
       alert("Está a gravar uma rota, por favor termine a gravação para consultar outra");
       return false;
     }
 
-
     var selectedRoute = angular.element($event.target);
-
-
-
 
     selectedRoute.parent().children().removeClass('topcoat-list__item__selected');
     selectedRoute.addClass('topcoat-list__item__selected');
@@ -1055,13 +1086,12 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
 
     for(var occ in route.occurrences){
       for(var ph in route.occurrences[occ].photos){
-        $("#photosDiv").append("<img src=data:image/jpeg;base64,'"+route.occurrences[occ].photos[ph].file+"' style='width:100%;'");
+        $scope.getPhoto(route.occurrences[occ].photos[ph].file);
       }
     }
 
     for (var i = 0; i < $scope.routes.length; i++) {
       if($scope.routes[i].id == id) {
-
         $scope.clearLayers();
         $scope.renderRoute($scope.routes[i]);
         return true;
@@ -1079,7 +1109,6 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
   leftButton.title = "Foto";
   leftButton.onTap = function() {
     if($scope.currentOccurrence) {
-      alert($scope.currentOccurrence);
       $scope.takePicture();
     } else {
       alert("Por favor seleccione uma patologia primeiro");
