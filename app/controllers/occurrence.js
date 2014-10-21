@@ -578,8 +578,8 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     if ($scope.currentRouteWatcher) {
       $scope.startRoute(null, true);
     }
-
   };
+
 
   /**
    * startPathOccurrence init GPS watcher and makes the relation to the instances
@@ -888,12 +888,11 @@ occurrenceApp.controller('IndexCtrl', function ($scope, $http,Occurrence) {
     if(newRouteName == "") {
       newRouteName = buildDate;
     }
-    else {
-      newRouteName += " " + dt.getDate() + '/' + dt.getMonth() + '/' + dt.getFullYear();
-    }
+    
     var route = {
       id: dt.getTime(),
       name: newRouteName,
+      date: buildDate,
       subRoutes : [],
       occurrences: [],
       options: {}
